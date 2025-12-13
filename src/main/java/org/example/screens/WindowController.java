@@ -1,13 +1,7 @@
 package org.example.screens;
 
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.net.URL;
 
 public class WindowController {
 
@@ -16,7 +10,7 @@ public class WindowController {
     // and causes "Location is not set." Instead, load views from the Application class or via
     // an explicit method when needed.
 
-    public static void loadMainView(Stage stage, String fxmlPath, String title) {
+    public static void loadMainView(Stage stage, String title) {
         try {
             // --- NOTE: We are bypassing FXML loading to generate the specific ---
             // --- Glassmorphism UI programmatically as requested. ---
@@ -118,11 +112,19 @@ public class WindowController {
             submitBtn.setOnAction(e -> {
                 String path = pathField.getText();
                 if (path == null || path.isEmpty()) {
+
+
+
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Validation Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Te rog selecteaza un fisier mai intai.");
+                    alert.showAndWait();
                     System.out.println("Validation Error: Please select a file first.");
-                    // Optional: Show an Alert here
+
                 } else {
                     System.out.println("Processing PDF at: " + path);
-                    // TODO: CALL YOUR PDF GENERATION LOGIC HERE
+
                 }
             });
 
