@@ -12,7 +12,6 @@ public class VechimoApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
 
-        //Use a helper class to load the main window
         WindowController.loadMainView(stage, "Vechimo Application");
     }
 }
