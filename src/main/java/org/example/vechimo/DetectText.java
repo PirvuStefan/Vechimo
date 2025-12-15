@@ -93,6 +93,17 @@ public class DetectText {
         return lines;
     }
 
+    public Map<String, String > extractMap(String imagePath) throws IOException {
+        File imageFile = new File(imagePath);
+        Map<String, String> extractedMap = new HashMap<>();
+
+        List < String> textBlocks = DetectText.this.extractTextLines(imagePath);
+
+        System.out.println("Text blocks for map extraction: " + textBlocks);
+
+        return extractedMap;
+    }
+
     public void close() {
         if (textractClient != null) {
             textractClient.close();

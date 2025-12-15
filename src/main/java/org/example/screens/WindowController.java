@@ -2,6 +2,7 @@ package org.example.screens;
 
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import org.example.vechimo.Parsing;
 
 public class WindowController {
 
@@ -86,8 +87,8 @@ public class WindowController {
             // Browse Logic
             browseBtn.setOnAction(e -> {
                 javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
-                fileChooser.setTitle("Selectează PDF");
-                fileChooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
+                fileChooser.setTitle("Selecteaza Poza cu PDF-ul");
+                fileChooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
                 java.io.File selectedFile = fileChooser.showOpenDialog(stage);
                 if (selectedFile != null) {
                     pathField.setText(selectedFile.getAbsolutePath());
@@ -115,6 +116,9 @@ public class WindowController {
 
 
 
+
+
+
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Validation Error");
                     alert.setHeaderText(null);
@@ -124,6 +128,26 @@ public class WindowController {
 
                 } else {
                     System.out.println("Processing PDF at: " + path);
+
+                    Parsing.ensureArhivaDirectory();
+                    try {
+                        java.util.Map<String, String> extractedData = Parsing.extractDataFromImage(path);
+                        System.out.println("Extracted Data: " + extractedData);
+
+                        Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                        successAlert.setTitle("Success");
+                        successAlert.setHeaderText(null);
+                        successAlert.setContentText("Document generat cu succes!");
+                        successAlert.showAndWait();
+
+                    } catch (java.io.IOException ioException) {
+                        System.err.println("Error processing file: " + ioException.getMessage());
+                        Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                        errorAlert.setTitle("Processing Error");
+                        errorAlert.setHeaderText(null);
+                        errorAlert.setContentText("A apărut o eroare la procesarea fișierului.");
+                        errorAlert.showAndWait();
+                    }
 
                 }
             });
