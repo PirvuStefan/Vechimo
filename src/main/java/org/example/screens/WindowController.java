@@ -124,8 +124,8 @@ public class WindowController {
                     System.out.println("Processing PDF at: " + path);
 
                     try {
-                        java.util.Map<String, String> extractedData = Parsing.extractDataFromImage(path);
-                        System.out.println("Extracted Data: " + extractedData);
+
+                        new Parsing(path);
 
                         Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
                         successAlert.setTitle("Success");

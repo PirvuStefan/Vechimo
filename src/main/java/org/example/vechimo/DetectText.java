@@ -93,9 +93,9 @@ public class DetectText {
         return lines;
     }
 
-    public Map<String, String > extractMap(String imagePath) throws IOException {
+    public void extractMap(String imagePath, Map<String, String > userMap, Map<String, String > ProgressMap) throws IOException {
         File imageFile = new File(imagePath);
-        Map<String, String> extractedMap = new HashMap<>();
+
 
         List < String> textBlocks = DetectText.this.extractTextLines(imagePath);
 
@@ -106,13 +106,37 @@ public class DetectText {
                 String[] parts = line.split("CNP");
                 if( parts.length > 1 ) {
                     String cnpValue = parts[1].trim().replaceAll("[:.]", "").replaceAll("\\s+", "");
-                    extractedMap.put("CNP", cnpValue);
+                    userMap.put("CNP", cnpValue);
                 }
             }
             else if(line.contains("Salariat:")){
-                extractedMap.put("name", textBlocks.get(i+1).trim());
+                    userMap.put("name", textBlocks.get(i+1).trim());
             }
-            else if(line.contains("Contract individual de muncă num")){
+            else if (line.toLowerCase().contains("contract individual de munc") ) {
+                // extract contract number (e.g. 1039/138) after "num" and date (e.g. 15.02.2018) after "data"
+                int numIdx = line.toLowerCase().indexOf("num");
+                if (numIdx >= 0) {
+                    java.util.regex.Matcher m = java.util.regex.Pattern.compile("([0-9/\\-]+)").matcher(line.substring(numIdx));
+                    if (m.find()) {
+                        userMap.put("contract_number", m.group(1));
+                    }
+                }
+                int dataIdx = line.toLowerCase().indexOf("data");
+                if (dataIdx >= 0) {
+                    java.util.regex.Matcher dm = java.util.regex.Pattern.compile("([0-9]{1,2}[\\.\\-/][0-9]{1,2}[\\.\\-/][0-9]{2,4})").matcher(line.substring(dataIdx));
+                    if (dm.find()) {
+                        userMap.put("contract_date", dm.group(1));
+                    }
+                }
+                // fallback: check next line if not found
+                if (!userMap.containsKey("contract_number") && i + 1 < textBlocks.size()) {
+                    java.util.regex.Matcher m2 = java.util.regex.Pattern.compile("([0-9/\\-]+)").matcher(textBlocks.get(i + 1));
+                    if (m2.find()) userMap.put("contract_number", m2.group(1));
+                }
+                if (!userMap.containsKey("contract_date") && i + 1 < textBlocks.size()) {
+                    java.util.regex.Matcher d2 = java.util.regex.Pattern.compile("([0-9]{1,2}[\\.\\-/][0-9]{1,2}[\\.\\-/][0-9]{2,4})").matcher(textBlocks.get(i + 1));
+                    if (d2.find()) userMap.put("contract_date", d2.group(1));
+                }
 
             }
 
@@ -123,7 +147,11 @@ public class DetectText {
 
         System.out.println("Text blocks for map extraction: " + textBlocks);
 
-        return extractedMap;
+        for( Map.Entry<String, String> entry : userMap.entrySet() ) {
+            System.out.println("Key: " + entry.getKey() + " | Value: " + entry.getValue());
+        }
+
+
     }
 
     public void close() {
