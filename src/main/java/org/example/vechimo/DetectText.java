@@ -99,6 +99,28 @@ public class DetectText {
 
         List < String> textBlocks = DetectText.this.extractTextLines(imagePath);
 
+        for( int i = 0 ; i < textBlocks.size()  ; i++ ) {
+            String line = textBlocks.get(i);
+
+            if(line.contains("CNP") && line.contains("identificat")){
+                String[] parts = line.split("CNP");
+                if( parts.length > 1 ) {
+                    String cnpValue = parts[1].trim().replaceAll("[:.]", "").replaceAll("\\s+", "");
+                    extractedMap.put("CNP", cnpValue);
+                }
+            }
+            else if(line.contains("Salariat:")){
+                extractedMap.put("name", textBlocks.get(i+1).trim());
+            }
+            else if(line.contains("Contract individual de muncă num")){
+
+            }
+
+
+            // Contract individual de muncă numărul 1039/138 din data 15.02.2018, pe durata Nedeterminată de la 19.02.2018,
+
+        }
+
         System.out.println("Text blocks for map extraction: " + textBlocks);
 
         return extractedMap;
