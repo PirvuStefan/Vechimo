@@ -93,7 +93,7 @@ public class DetectText {
         return lines;
     }
 
-    public void extractMap(String imagePath, Map<String, String > userMap, Map<String, String > ProgressMap) throws IOException {
+    public void extractMap(String imagePath, Map<String, String > userMap, Map<String, InterventionRecord > ProgressMap) throws IOException {
         File imageFile = new File(imagePath);
 
 
@@ -136,8 +136,14 @@ public class DetectText {
                 if (!userMap.containsKey("contract_date") && i + 1 < textBlocks.size()) {
                     java.util.regex.Matcher d2 = java.util.regex.Pattern.compile("([0-9]{1,2}[\\.\\-/][0-9]{1,2}[\\.\\-/][0-9]{2,4})").matcher(textBlocks.get(i + 1));
                     if (d2.find()) userMap.put("contract_date", d2.group(1));
-                }
+                } // here we do know when he signed the contract ( like when he got hired )
 
+
+            }
+
+            if (line.toLowerCase().contains("salariu brut stabilit la")) {
+                InterventionRecord Record = getInterventionRecordMajorare(line);
+                ProgressMap.put("initial_salary", Record);
             }
 
 
@@ -152,6 +158,19 @@ public class DetectText {
         }
 
 
+    }
+
+    private static InterventionRecord getInterventionRecordMajorare(String line) {
+        double salary = 0;
+        // extract the salary amount after "la" and before "lei"
+        int laIdx = line.toLowerCase().indexOf("la");
+        int leiIdx = line.toLowerCase().indexOf("lei");
+        if (laIdx >= 0 && leiIdx > laIdx) {
+            String salaryStr = line.substring(laIdx + 2, leiIdx).trim().replaceAll("[^0-9]", "");
+            salary = Double.parseDouble(salaryStr);
+        }
+        InterventionRecord Record = new InterventionRecord("inregistrare", Parsing.currentJob, "decizie", (int) salary);
+        return Record;
     }
 
     public void close() {

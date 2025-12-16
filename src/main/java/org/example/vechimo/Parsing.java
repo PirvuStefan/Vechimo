@@ -6,11 +6,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+
 public class Parsing {
 
+
+    public static String currentJob;
     private static final String ARHIVA_DIR = "arhiva";
     private static Map<String , String> userDataMap = new HashMap<>();
-    private static Map<String, String > userProgressMap = new TreeMap<>();
+    private static Map<String, InterventionRecord > userProgressMap = new TreeMap<>(new org.example.vechimo.YearComparator());
 
     public Parsing(String imagePath) throws IOException {
          new DetectText().extractMap(imagePath, userDataMap, userProgressMap);
