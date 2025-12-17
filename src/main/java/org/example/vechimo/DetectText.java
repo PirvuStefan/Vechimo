@@ -142,8 +142,8 @@ public class DetectText {
             }
 
             if (line.toLowerCase().contains("salariu brut stabilit la")) {
-                InterventionRecord Record = getInterventionRecordMajorare(line);
-                ProgressMap.put("initial_salary", Record);
+                putInterventionRecordMajorare(line, textBlocks.get(i-1));
+               // ProgressMap.put("initial_salary", Record);
             }
 
 
@@ -157,10 +157,15 @@ public class DetectText {
             System.out.println("Key: " + entry.getKey() + " | Value: " + entry.getValue());
         }
 
+        for( Map.Entry<String , InterventionRecord> entry : ProgressMap.entrySet() ) {
+            System.out.print("Key: " + entry.getKey() + " | Value: ");
+            entry.getValue().print();
+        }
+
 
     }
 
-    private static InterventionRecord getInterventionRecordMajorare(String line) {
+    private static void putInterventionRecordMajorare(String line, String beforeline) {
         double salary = 0;
         // extract the salary amount after "la" and before "lei"
         int laIdx = line.toLowerCase().indexOf("la");
@@ -169,8 +174,9 @@ public class DetectText {
             String salaryStr = line.substring(laIdx + 2, leiIdx).trim().replaceAll("[^0-9]", "");
             salary = Double.parseDouble(salaryStr);
         }
-        InterventionRecord Record = new InterventionRecord("inregistrare", Parsing.currentJob, "decizie", (int) salary);
-        return Record;
+        InterventionRecord Record = new InterventionRecord("majorare", Parsing.currentJob, "decizie", (int) salary);
+        Parsing.userProgressMap.put(beforeline.trim(), Record);
+        //return Record;
     }
 
     public void close() {

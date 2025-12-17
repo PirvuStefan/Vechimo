@@ -28,4 +28,8 @@ public class InterventionRecord {
         };
     }
 
+    public void print(){
+        System.out.println(type + " " + job + " " + act + " " + salary + " |");
+    }
+
 }
