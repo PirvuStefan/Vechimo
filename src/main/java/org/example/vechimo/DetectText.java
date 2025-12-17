@@ -140,6 +140,29 @@ public class DetectText {
 
 
             }
+            else if(line.contains("COR") && line.contains("Data inceput contract")){
+                String[] parts = line.split("COR");
+                if (parts.length > 1) {
+                    String afterCor = parts[1];
+                    int dashIdx = afterCor.indexOf('-');
+                    if (dashIdx >= 0) {
+                        afterCor = afterCor.substring(0, dashIdx);
+                    }
+                    int commaIdx = afterCor.indexOf(',');
+                    if (commaIdx >= 0) {
+                        afterCor = afterCor.substring(0, commaIdx);
+                    }
+                    String jobValue = afterCor.trim().replaceAll("[^0-9]", "");
+                    if (!jobValue.isEmpty()) {
+                        System.out.println(jobValue + " \n\n");
+                        User.currentJob = jobValue;
+                        userMap.put("job", jobValue);
+                    }
+                }
+                continue;
+            }
+
+
 
             if (line.toLowerCase().contains("salariu brut stabilit la")) {
                 putInterventionRecordMajorare(line, textBlocks.get(i-1));
@@ -153,14 +176,8 @@ public class DetectText {
 
         System.out.println("Text blocks for map extraction: " + textBlocks);
 
-        for( Map.Entry<String, String> entry : userMap.entrySet() ) {
-            System.out.println("Key: " + entry.getKey() + " | Value: " + entry.getValue());
-        }
 
-        for( Map.Entry<String , InterventionRecord> entry : ProgressMap.entrySet() ) {
-            System.out.print("Key: " + entry.getKey() + " | Value: ");
-            entry.getValue().print();
-        }
+        User.print();
 
 
     }
@@ -174,10 +191,19 @@ public class DetectText {
             String salaryStr = line.substring(laIdx + 2, leiIdx).trim().replaceAll("[^0-9]", "");
             salary = Double.parseDouble(salaryStr);
         }
-        InterventionRecord Record = new InterventionRecord("majorare", Parsing.currentJob, "decizie", (int) salary);
-        Parsing.userProgressMap.put(beforeline.trim(), Record);
-        //return Record;
+        InterventionRecord Record = new InterventionRecord("majorare", User.currentJob, "decizie", (int) salary);
+        User.currentSalary = (int) salary;
+        User.ProgressMap.put(beforeline.trim(), Record);
     }
+
+    private static void putInterventionRecordIncetare(String line, String beforeline) {
+        InterventionRecord Record = new InterventionRecord("incetare", User.currentJob, "decizie", User.currentSalary);
+        User.ProgressMap.put(beforeline.trim(), Record);
+
+
+    }
+
+
 
     public void close() {
         if (textractClient != null) {

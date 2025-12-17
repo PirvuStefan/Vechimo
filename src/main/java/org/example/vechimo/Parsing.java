@@ -10,13 +10,12 @@ import java.util.TreeMap;
 public class Parsing {
 
 
-    public static String currentJob ;
+
     private static final String ARHIVA_DIR = "arhiva";
-    static Map<String , String> userDataMap = new HashMap<>();
-    static Map<String, InterventionRecord > userProgressMap = new TreeMap<>(new org.example.vechimo.YearComparator());
+
 
     public Parsing(String imagePath) throws IOException {
-         new DetectText().extractMap(imagePath, userDataMap, userProgressMap);
+         new DetectText().extractMap(imagePath, User.DataMap, User.ProgressMap);
     }
 
 
