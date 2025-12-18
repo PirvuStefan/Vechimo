@@ -168,6 +168,14 @@ public class DetectText {
                 putInterventionRecordMajorare(line, textBlocks.get(i-1));
                // ProgressMap.put("initial_salary", Record);
             }
+            else if(line.toLowerCase().contains("nceteaza contract la data") ) {
+                putInterventionRecordIncetare(line, textBlocks.get(i-1));
+            }
+
+            if(User.isCOR(line) && line.contains("Ore de zi") && !line.contains("COR")){
+                putInterventionRecordPromovare(line, textBlocks.get(i-1));
+
+            }
 
 
             // Contract individual de muncă numărul 1039/138 din data 15.02.2018, pe durata Nedeterminată de la 19.02.2018,
@@ -197,10 +205,52 @@ public class DetectText {
     }
 
     private static void putInterventionRecordIncetare(String line, String beforeline) {
-        InterventionRecord Record = new InterventionRecord("incetare", User.currentJob, "decizie", User.currentSalary);
+        InterventionRecord Record = new InterventionRecord("incetare", User.currentJob, "decizie", User.currentSalary); // this is alright
         User.ProgressMap.put(beforeline.trim(), Record);
 
 
+    }
+
+    private static void putInterventionRecordPromovare(String line, String beforeline) {
+
+        String startDate = null;
+        java.util.regex.Matcher dateMatcher = java.util.regex.Pattern
+                .compile("^\\s*([0-9]{1,2}[\\.\\-/][0-9]{1,2}[\\.\\-/][0-9]{2,4})")
+                .matcher(line);
+        if (dateMatcher.find()) {
+            startDate = dateMatcher.group(1).trim();
+        }
+
+        // extract job code before hyphen (e.g. 522101 from "522101-VÂNZÄTOR")
+        line = line.substring(22);
+        String jobValue = null;
+        java.util.regex.Matcher jobMatcher = java.util.regex.Pattern.compile("(\\d+)\\s*-").matcher(line);
+        if (jobMatcher.find()) {
+            jobValue = jobMatcher.group(1).trim();
+        }
+
+        if (jobValue != null && !jobValue.isEmpty()) {
+            User.currentJob = jobValue;
+        }
+
+        String key = (startDate != null && !startDate.isEmpty()) ? startDate : (beforeline != null ? beforeline.trim() : "unknown_date");
+
+
+        if(!User.isInitialized){
+            InterventionRecord record = new InterventionRecord("inregistrare", User.currentJob, "cim ", User.currentSalary);
+            User.isInitialized = true;
+            // this is a problem because of the way the parsing works, when we do reach this point ( the list of the promotions and the register , we already reached the "majorare" and User.currently salary is set to the latest salary
+
+            User.ProgressMap.put(key, record);
+            return;
+        }
+
+
+
+        InterventionRecord record = new InterventionRecord("promovare", User.currentJob, "decizie", User.currentSalary);
+
+
+        User.ProgressMap.put(key, record);
     }
 
 

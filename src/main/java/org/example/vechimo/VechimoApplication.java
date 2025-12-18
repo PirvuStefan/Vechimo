@@ -10,7 +10,7 @@ public class VechimoApplication extends Application {
 
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) {
 
         WindowController.loadMainView(stage, "Vechimo Application");
     }
