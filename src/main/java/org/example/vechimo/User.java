@@ -10,7 +10,7 @@ public class User { // static class to hold user data across different screens (
     static int currentSalary = 0;
     static boolean isInitialized = false;
     static Map<String , String> DataMap = new HashMap<>();
-    static Map<String, InterventionRecord > ProgressMap = new TreeMap<>(new org.example.vechimo.YearComparator());
+    static TreeMap<String, InterventionRecord > ProgressMap = new TreeMap<>(new org.example.vechimo.YearComparator());
 
     static void resetUserData(){
         currentJob = "522101";
