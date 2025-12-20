@@ -1,8 +1,6 @@
 package org.example.vechimo;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class User { // static class to hold user data across different screens ( no abstract class since we only have one user during runtime )
 
@@ -10,7 +8,7 @@ public class User { // static class to hold user data across different screens (
     static int currentSalary = 0;
     static boolean isInitialized = false;
     static Map<String , String> DataMap = new HashMap<>();
-    static TreeMap<String, InterventionRecord > ProgressMap = new TreeMap<>(new org.example.vechimo.YearComparator());
+    static TreeMap<String, List<InterventionRecord>> ProgressMap = new TreeMap<>(new org.example.vechimo.YearComparator());
 
     static void resetUserData(){
         currentJob = "522101";
@@ -21,10 +19,26 @@ public class User { // static class to hold user data across different screens (
     }
 
     static void printProgressMap(){
-        for (Map.Entry<String, InterventionRecord> entry : ProgressMap.entrySet()) {
+        for (Map.Entry<String, List<InterventionRecord> > entry : ProgressMap.entrySet()) {
             System.out.print(entry.getKey() + " | ");
-            entry.getValue().print();
+
+            for(InterventionRecord record : entry.getValue()){
+                record.print();
+            }
+            System.out.println();
+
         }
+    }
+
+    static void addInterventionRecord(String key, InterventionRecord Record){
+        if(User.ProgressMap.containsKey(key.trim())){
+            List< InterventionRecord > records = User.ProgressMap.get(key.trim());
+            records.add(Record);
+            return;
+        }
+        List < InterventionRecord > records = new ArrayList<>();
+        records.add(Record);
+        User.ProgressMap.put(key.trim(), records);
     }
 
     static void printDataMap(){

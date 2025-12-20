@@ -1,5 +1,8 @@
 package org.example.vechimo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class InterventionRecord {
     String type, job, act;
     int salary;
@@ -29,7 +32,7 @@ public class InterventionRecord {
     }
 
     public void print(){
-        System.out.println(type + " " + job + " " + act + " " + salary);
+        System.out.println(type + " " + job + " " + act + " " + salary + " ;");
     }
 
     static void putInterventionRecordMajorare(String line, String beforeline) {
@@ -43,12 +46,13 @@ public class InterventionRecord {
         }
         InterventionRecord Record = new InterventionRecord("majorare", User.currentJob, "decizie", (int) salary);
         User.currentSalary = (int) salary;
-        User.ProgressMap.put(beforeline.trim(), Record);
+        User.addInterventionRecord(beforeline, Record);
     }
 
     static void putInterventionRecordIncetare(String line, String beforeline) {
         InterventionRecord Record = new InterventionRecord("incetare", User.currentJob, "decizie", User.currentSalary); // this is alright
-        User.ProgressMap.put(beforeline.trim(), Record);
+
+        User.addInterventionRecord(beforeline, Record);
 
 
     }
@@ -82,8 +86,7 @@ public class InterventionRecord {
             InterventionRecord record = new InterventionRecord("inregistrare", User.currentJob, "cim ", getSalaryPresent(key));
             User.isInitialized = true;
             // this is a problem because of the way the parsing works, when we do reach this point ( the list of the promotions and the register , we already reached the "majorare" and User.currently salary is set to the latest salary
-
-            User.ProgressMap.put(key, record);
+            User.addInterventionRecord(key,record);
             return;
         }
 
@@ -91,13 +94,13 @@ public class InterventionRecord {
 
         InterventionRecord record = new InterventionRecord("promovare", User.currentJob, "decizie", getSalaryPresent(key));
 
-
-        User.ProgressMap.put(key, record);
+        User.addInterventionRecord(key, record);
     }
 
     private static int getSalaryPresent(String key){
         if(User.ProgressMap.lowerKey(key) == null) return 0;
-        return User.ProgressMap.get(User.ProgressMap.lowerKey(key)).salary;
+        //return User.ProgressMap.get(User.ProgressMap.lowerKey(key)).salary;
+        return 1;
     }
 
 }

@@ -80,7 +80,7 @@ public class DetectText {
         return lines;
     }
 
-    public void extractMap(String imagePath, Map<String, String > userMap, Map<String, InterventionRecord > ProgressMap) throws IOException {
+    public void extractMap(String imagePath, Map<String, String > userMap, Map<String, List< InterventionRecord > > ProgressMap) throws IOException {
         File imageFile = new File(imagePath);
 
 
