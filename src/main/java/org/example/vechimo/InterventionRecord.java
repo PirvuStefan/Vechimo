@@ -103,6 +103,7 @@ public class InterventionRecord {
         // this in intented to be used when we have a promotion or a registration ( most likely a registration )
         // we need to find the greatest salary up to that point in time ( assuming the salary never decreases )
 
+        if(User.ProgressMap.get(key) == null) return 0;
         for(InterventionRecord record : User.ProgressMap.get(key)){
             if(record.salary > salary ) salary = record.salary;
         }

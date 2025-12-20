@@ -1,5 +1,7 @@
 package org.example.vechimo;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public class User { // static class to hold user data across different screens ( no abstract class since we only have one user during runtime )
@@ -9,6 +11,102 @@ public class User { // static class to hold user data across different screens (
     static boolean isInitialized = false;
     static Map<String , String> DataMap = new HashMap<>();
     static TreeMap<String, List<InterventionRecord>> ProgressMap = new TreeMap<>(new org.example.vechimo.YearComparator());
+
+    public static void extractMap(String imagePath) throws IOException {
+
+        DetectText DetectText = new DetectText();
+        List < String> textBlocks = DetectText.extractTextLines(imagePath);
+
+        for( int i = 0 ; i < textBlocks.size()  ; i++ ) {
+            String line = textBlocks.get(i);
+
+            if(line.contains("CNP") && line.contains("identificat")){
+                String[] parts = line.split("CNP");
+                if( parts.length > 1 ) {
+                    String cnpValue = parts[1].trim().replaceAll("[:.]", "").replaceAll("\\s+", "");
+                    DataMap.put("CNP", cnpValue);
+                }
+            }
+            else if(line.contains("Salariat:")){
+                DataMap.put("name", textBlocks.get(i+1).trim());
+            }
+            else if (line.toLowerCase().contains("contract individual de munc") ) {
+                // extract contract number (e.g. 1039/138) after "num" and date (e.g. 15.02.2018) after "data"
+                int numIdx = line.toLowerCase().indexOf("num");
+                if (numIdx >= 0) {
+                    java.util.regex.Matcher m = java.util.regex.Pattern.compile("([0-9/\\-]+)").matcher(line.substring(numIdx));
+                    if (m.find()) {
+                        DataMap.put("contract_number", m.group(1));
+                    }
+                }
+                int dataIdx = line.toLowerCase().indexOf("data");
+                if (dataIdx >= 0) {
+                    java.util.regex.Matcher dm = java.util.regex.Pattern.compile("([0-9]{1,2}[\\.\\-/][0-9]{1,2}[\\.\\-/][0-9]{2,4})").matcher(line.substring(dataIdx));
+                    if (dm.find()) {
+                        DataMap.put("contract_date", dm.group(1));
+                    }
+                }
+                // fallback: check next line if not found
+                if (!DataMap.containsKey("contract_number") && i + 1 < textBlocks.size()) {
+                    java.util.regex.Matcher m2 = java.util.regex.Pattern.compile("([0-9/\\-]+)").matcher(textBlocks.get(i + 1));
+                    if (m2.find()) DataMap.put("contract_number", m2.group(1));
+                }
+                if (!DataMap.containsKey("contract_date") && i + 1 < textBlocks.size()) {
+                    java.util.regex.Matcher d2 = java.util.regex.Pattern.compile("([0-9]{1,2}[\\.\\-/][0-9]{1,2}[\\.\\-/][0-9]{2,4})").matcher(textBlocks.get(i + 1));
+                    if (d2.find()) DataMap.put("contract_date", d2.group(1));
+                } // here we do know when he signed the contract ( like when he got hired )
+
+
+            }
+            else if(line.contains("COR") && line.contains("Data inceput contract")){
+                String[] parts = line.split("COR");
+                if (parts.length > 1) {
+                    String afterCor = parts[1];
+                    int dashIdx = afterCor.indexOf('-');
+                    if (dashIdx >= 0) {
+                        afterCor = afterCor.substring(0, dashIdx);
+                    }
+                    int commaIdx = afterCor.indexOf(',');
+                    if (commaIdx >= 0) {
+                        afterCor = afterCor.substring(0, commaIdx);
+                    }
+                    String jobValue = afterCor.trim().replaceAll("[^0-9]", "");
+                    if (!jobValue.isEmpty()) {
+                        System.out.println(jobValue + " \n\n");
+                        User.currentJob = jobValue;
+                        DataMap.put("job", jobValue);
+                    }
+                }
+                continue;
+            }
+
+
+
+            if (line.toLowerCase().contains("salariu brut stabilit la")) {
+                InterventionRecord.putInterventionRecordMajorare(line, textBlocks.get(i-1));
+                // ProgressMap.put("initial_salary", Record);
+            }
+            else if(line.toLowerCase().contains("nceteaza contract la data") ) {
+                InterventionRecord.putInterventionRecordIncetare(line, textBlocks.get(i-1));
+            }
+
+            if(User.isCOR(line) && line.contains("Ore de zi") && !line.contains("COR")){
+                InterventionRecord.putInterventionRecordPromovare(line, textBlocks.get(i-1));
+
+            }
+
+
+            // Contract individual de muncă numărul 1039/138 din data 15.02.2018, pe durata Nedeterminată de la 19.02.2018,
+
+        }
+
+        System.out.println("Text blocks for map extraction: " + textBlocks);
+
+
+        User.print();
+
+
+    }
 
     static void resetUserData(){
         currentJob = "522101";

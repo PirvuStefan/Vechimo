@@ -15,7 +15,7 @@ public class Parsing {
 
 
     public Parsing(String imagePath) throws IOException {
-         new DetectText().extractMap(imagePath, User.DataMap, User.ProgressMap);
+         User.extractMap(imagePath);
     }
 
 
