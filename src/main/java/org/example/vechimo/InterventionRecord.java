@@ -98,9 +98,25 @@ public class InterventionRecord {
     }
 
     private static int getSalaryPresent(String key){
-        if(User.ProgressMap.lowerKey(key) == null) return 0;
-        //return User.ProgressMap.get(User.ProgressMap.lowerKey(key)).salary;
-        return 1;
+        int salary = 0;
+
+        // this in intented to be used when we have a promotion or a registration ( most likely a registration )
+        // we need to find the greatest salary up to that point in time ( assuming the salary never decreases )
+
+        for(InterventionRecord record : User.ProgressMap.get(key)){
+            if(record.salary > salary ) salary = record.salary;
+        }
+        if(User.ProgressMap.lowerKey(key) == null) return salary;
+        for(InterventionRecord record : User.ProgressMap.get(User.ProgressMap.lowerKey(key))){
+            if(record.salary > salary) salary = record.salary;
+
+        }
+        for(InterventionRecord record : User.ProgressMap.get(key)){
+            if(record.salary > salary ) salary = record.salary;
+        }
+
+
+        return salary;
     }
 
 }
