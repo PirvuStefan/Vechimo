@@ -26,13 +26,14 @@ public class InterventionRecord {
         return switch (type) {
             case "inregistrare" -> "Inrgistrare Contract";
             case "majorare" -> "Majorare salariu";
+            case "incetare" -> "Incetare contract";
             case "inspection" -> "Inspection:";
             default -> "Unknown intervention type";
         };
     }
 
     public void print(){
-        System.out.println(type + " " + job + " " + act + " " + salary + " ;");
+        System.out.print(type + " " + job + " " + act + " " + salary + " ; ");
     }
 
     static void putInterventionRecordMajorare(String line, String beforeline) {
@@ -51,7 +52,6 @@ public class InterventionRecord {
 
     static void putInterventionRecordIncetare(String line, String beforeline) {
         InterventionRecord Record = new InterventionRecord("incetare", User.currentJob, "decizie", User.currentSalary); // this is alright
-
         User.addInterventionRecord(beforeline, Record);
 
 
@@ -81,19 +81,49 @@ public class InterventionRecord {
 
         String key = (startDate != null && !startDate.isEmpty()) ? startDate : (beforeline != null ? beforeline.trim() : "unknown_date");
 
-
-        if(!User.isInitialized){
-            InterventionRecord record = new InterventionRecord("inregistrare", User.currentJob, "cim ", getSalaryPresent(key));
-            User.isInitialized = true;
-            // this is a problem because of the way the parsing works, when we do reach this point ( the list of the promotions and the register , we already reached the "majorare" and User.currently salary is set to the latest salary
-            User.addInterventionRecord(key,record);
+        if(!canbePromoted(User.currentJob)){
             return;
         }
 
 
 
+
+
+
         InterventionRecord record = new InterventionRecord("promovare", User.currentJob, "decizie", getSalaryPresent(key));
 
+        User.addInterventionRecord(key, record);
+    }
+
+    static void putInterventionRecordInregistrare(String line, String beforeline){
+        String key = "01.01.2004";
+        int salary = 0;
+        // extract salary after "Salariu brut" and before "Lei"
+        int sbIdx = line.indexOf("Salariu brut");
+        int leiIdx = line.indexOf("Lei");
+        if(sbIdx >= 0 && leiIdx > sbIdx){
+            int start = sbIdx + "Salariu brut".length();
+            String salaryStr = line.substring(start, leiIdx).trim().replaceAll("[^0-9]", "");
+            if(!salaryStr.isEmpty()){
+                salary = Integer.parseInt(salaryStr);
+            }
+        }
+
+        // extract date key after "Data inceput contract" (expected 10 chars like 01.09.2025)
+        if (beforeline != null) {
+            int diIdx = beforeline.indexOf("Data inceput contract");
+            if (diIdx >= 0) {
+                int start = diIdx + "Data inceput contract".length();
+                String rest = beforeline.substring(start).trim();
+                if (rest.length() >= 10) {
+                    key = rest.substring(0, 10);
+                } else if (!rest.isEmpty()) {
+                    key = rest;
+                }
+            }
+        }
+
+        InterventionRecord record = new InterventionRecord("inregistrare", User.currentJob, "cim ", salary);
         User.addInterventionRecord(key, record);
     }
 
@@ -103,7 +133,7 @@ public class InterventionRecord {
         // this in intented to be used when we have a promotion or a registration ( most likely a registration )
         // we need to find the greatest salary up to that point in time ( assuming the salary never decreases )
 
-        if(User.ProgressMap.get(key) == null) return 0;
+        if(User.ProgressMap.get(key) == null) return salary;
         for(InterventionRecord record : User.ProgressMap.get(key)){
             if(record.salary > salary ) salary = record.salary;
         }
@@ -112,12 +142,21 @@ public class InterventionRecord {
             if(record.salary > salary) salary = record.salary;
 
         }
-        for(InterventionRecord record : User.ProgressMap.get(key)){
-            if(record.salary > salary ) salary = record.salary;
-        }
 
 
         return salary;
+    }
+
+    private static boolean canbePromoted(String job){
+        // test if the promotion can happen ( if we alraedy have that job, then no promotion )
+        for(String key : User.ProgressMap.keySet()){
+            for(InterventionRecord record : User.ProgressMap.get(key)){
+                if(record.job.equals(job) && record.type.equals("inregistrare")){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 }

@@ -9,9 +9,38 @@ public class UnitTest implements DocumentExtractor{
 
     @Override
     public java.util.List<String> extractTextLines(String imagePath) {
-        // we do not need to use the imagePath parameter here
+        java.util.List<String> lines = new java.util.ArrayList<>();
 
+        // try classpath resource "test.txt"
+        java.io.InputStream is = getClass().getClassLoader().getResourceAsStream("test.txt");
+        if (is == null) {
+            // fallback to file system: "test" or "test.txt"
+            java.io.File f = new java.io.File("test");
+            if (!f.exists()) {
+                f = new java.io.File("test.txt");
+            }
+            if (f.exists()) {
+                try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(f))) {
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        lines.add(line);
+                    }
+                } catch (java.io.IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return lines;
+        }
 
-        return null;
+        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(is))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                lines.add(line);
+            }
+        } catch (java.io.IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return lines;
     }
 }

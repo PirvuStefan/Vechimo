@@ -25,7 +25,21 @@ public class YearComparator implements Comparator< String > {
         if( parts1.length != 3 || parts2.length != 3 ) {
             System.out.println("Invalid date format for the progres map key");
             System.out.println("This should not happen: " + year1 + " or " + year2);
+            System.out.print("Too long or too short parts: ");
 
+            return year1.compareTo(year2);
+        }
+
+        try {
+            Integer.parseInt(parts1[0]);
+            Integer.parseInt(parts1[1]);
+            Integer.parseInt(parts1[2]);
+            Integer.parseInt(parts2[0]);
+            Integer.parseInt(parts2[1]);
+            Integer.parseInt(parts2[2]);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid date format for the progres map key");
+            System.out.println("This should not happen: " + year1 + " or " + year2);
             return year1.compareTo(year2);
         }
 

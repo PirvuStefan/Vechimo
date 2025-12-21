@@ -15,6 +15,7 @@ public class Parsing {
 
 
     public Parsing(String imagePath) throws IOException {
+         ensureArhivaDirectory();
          User.extractMap(imagePath);
     }
 

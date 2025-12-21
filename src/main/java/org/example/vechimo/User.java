@@ -15,7 +15,9 @@ public class User { // static class to hold user data across different screens (
     public static void extractMap(String imagePath) throws IOException {
 
         DetectText DetectText = new DetectText();
-        List < String> textBlocks = DetectText.extractTextLines(imagePath);
+        UnitTest test = new UnitTest();
+        //List < String> textBlocks = DetectText.extractTextLines(imagePath);
+        List < String > textBlocks = test.extractTextLines(imagePath);
 
         for( int i = 0 ; i < textBlocks.size()  ; i++ ) {
             String line = textBlocks.get(i);
@@ -82,13 +84,22 @@ public class User { // static class to hold user data across different screens (
 
 
 
+
+            if(line.contains("Salariu brut") && textBlocks.get(i-1).contains("COR") && textBlocks.get(i-1).contains("Data inceput")){
+                // here we have the initial salary and the initial job ( inregistrare )
+                InterventionRecord.putInterventionRecordInregistrare(line, textBlocks.get(i-1));
+                continue;
+            }
+
             if (line.toLowerCase().contains("salariu brut stabilit la")) {
                 InterventionRecord.putInterventionRecordMajorare(line, textBlocks.get(i-1));
-                // ProgressMap.put("initial_salary", Record);
+
             }
             else if(line.toLowerCase().contains("nceteaza contract la data") ) {
                 InterventionRecord.putInterventionRecordIncetare(line, textBlocks.get(i-1));
             }
+
+
 
             if(User.isCOR(line) && line.contains("Ore de zi") && !line.contains("COR")){
                 InterventionRecord.putInterventionRecordPromovare(line, textBlocks.get(i-1));
