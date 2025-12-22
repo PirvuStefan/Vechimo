@@ -6,7 +6,7 @@ import java.util.*;
 
 public class User { // static class to hold user data across different screens ( no abstract class since we only have one user during runtime )
 
-    static String currentJob = "522101"; // default value if for some reason the parsing fails to initialize it
+    static String currentJob ; // default value if for some reason the parsing fails to initialize it
     static int currentSalary = 0;
     static boolean isInitialized = false;
     static Map<String , String> DataMap = new HashMap<>();
@@ -113,6 +113,8 @@ public class User { // static class to hold user data across different screens (
 
         System.out.println("Text blocks for map extraction: " + textBlocks);
 
+        updateInterventionRecord();
+
 
         User.print();
 
@@ -148,6 +150,35 @@ public class User { // static class to hold user data across different screens (
         List < InterventionRecord > records = new ArrayList<>();
         records.add(Record);
         User.ProgressMap.put(key.trim(), records);
+    }
+
+    static void updateInterventionRecord(){
+        String job = null;
+        for( int i = 0 ; i < ProgressMap.size() ; i++ ) {
+            Map.Entry<String, List<InterventionRecord> > entry = (Map.Entry<String, List<InterventionRecord> >) ProgressMap.entrySet().toArray()[i];
+            for(int j = 0 ; j < entry.getValue().size() ; j++ ) {
+                InterventionRecord record = entry.getValue().get(j);
+                if(record.type.equals("promovare")){
+                    job = record.job;
+                    for(int k = j+1 ; k < entry.getValue().size() ; k++ ) {
+                        InterventionRecord nextRecord = entry.getValue().get(k);
+
+                        if(nextRecord.type.equals("incetare")){
+                            nextRecord.job = job;
+                            return;
+                        }
+                        if(!nextRecord.type.equals("promovare")){
+                            nextRecord.job = job;
+                        }
+                        if(nextRecord.type.equals("promovare")) job = nextRecord.job;
+                    }
+
+                }
+                else{
+                  if(job!=null) record.job = job;
+                }
+            }
+        }
     }
 
     static void printDataMap(){

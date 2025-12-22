@@ -79,11 +79,13 @@ public class InterventionRecord {
             User.currentJob = jobValue;
         }
 
-        String key = (startDate != null && !startDate.isEmpty()) ? startDate : (beforeline != null ? beforeline.trim() : "unknown_date");
-
         if(!canbePromoted(User.currentJob)){
             return;
         }
+
+        String key = (startDate != null && !startDate.isEmpty()) ? startDate : (beforeline != null ? beforeline.trim() : "unknown_date");
+
+
 
 
 
@@ -133,9 +135,11 @@ public class InterventionRecord {
         // this in intented to be used when we have a promotion or a registration ( most likely a registration )
         // we need to find the greatest salary up to that point in time ( assuming the salary never decreases )
 
-        if(User.ProgressMap.get(key) == null) return salary;
-        for(InterventionRecord record : User.ProgressMap.get(key)){
-            if(record.salary > salary ) salary = record.salary;
+
+        if(User.ProgressMap.get(key) != null) {
+            for (InterventionRecord record : User.ProgressMap.get(key)) {
+                if (record.salary > salary) salary = record.salary;
+            }
         }
         if(User.ProgressMap.lowerKey(key) == null) return salary;
         for(InterventionRecord record : User.ProgressMap.get(User.ProgressMap.lowerKey(key))){
