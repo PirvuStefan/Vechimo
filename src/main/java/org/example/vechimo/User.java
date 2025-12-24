@@ -8,6 +8,7 @@ public class User { // static class to hold user data across different screens (
 
     static String currentJob ; // default value if for some reason the parsing fails to initialize it
     static int currentSalary = 0;
+    static int count = 0;
     static boolean isInitialized = false;
     static Map<String , String> DataMap = new HashMap<>();
     static TreeMap<String, List<InterventionRecord>> ProgressMap = new TreeMap<>(new org.example.vechimo.YearComparator());
@@ -116,6 +117,7 @@ public class User { // static class to hold user data across different screens (
         updateInterventionRecord();
 
 
+
         User.print();
 
 
@@ -156,6 +158,7 @@ public class User { // static class to hold user data across different screens (
         String job = null;
         for( int i = 0 ; i < ProgressMap.size() ; i++ ) {
             Map.Entry<String, List<InterventionRecord> > entry = (Map.Entry<String, List<InterventionRecord> >) ProgressMap.entrySet().toArray()[i];
+            count = count + entry.getValue().size();
             for(int j = 0 ; j < entry.getValue().size() ; j++ ) {
                 InterventionRecord record = entry.getValue().get(j);
                 if(record.type.equals("promovare")){
@@ -165,6 +168,7 @@ public class User { // static class to hold user data across different screens (
 
                         if(nextRecord.type.equals("incetare")){
                             nextRecord.job = job;
+
                             return;
                         }
                         if(!nextRecord.type.equals("promovare")){
@@ -179,6 +183,8 @@ public class User { // static class to hold user data across different screens (
                 }
             }
         }
+
+
     }
 
     static void printDataMap(){
@@ -193,6 +199,7 @@ public class User { // static class to hold user data across different screens (
         printProgressMap();
         System.out.println("\n");
         System.out.println("At this time, the job is : " + currentJob + " which has the salary of " + currentSalary);
+        System.out.println("Total intervention records: " + count);
     }
 
     static String getJob(){
