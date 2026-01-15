@@ -2,6 +2,8 @@ package org.example.vechimo;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class User { // static class to hold user data across different screens ( no abstract class since we only have one user during runtime )
@@ -10,6 +12,7 @@ public class User { // static class to hold user data across different screens (
     static int currentSalary = 0;
     static int count = 0;
     static boolean isInitialized = false;
+    private static final String DATE_FORMAT = "dd.MM.yyyy";
     static Map<String , String> DataMap = new HashMap<>();
     static TreeMap<String, List<InterventionRecord>> ProgressMap = new TreeMap<>(new org.example.vechimo.YearComparator());
 
@@ -19,6 +22,10 @@ public class User { // static class to hold user data across different screens (
         UnitTest test = new UnitTest();
         //List < String> textBlocks = DetectText.extractTextLines(imagePath);
         List < String > textBlocks = test.extractTextLines(imagePath);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
+        String today = LocalDate.now().format(formatter);
+        DataMap.put("today", today);
 
         for( int i = 0 ; i < textBlocks.size()  ; i++ ) {
             String line = textBlocks.get(i);
@@ -50,13 +57,13 @@ public class User { // static class to hold user data across different screens (
                     }
                 }
                 // fallback: check next line if not found
-                if (!DataMap.containsKey("contract_number") && i + 1 < textBlocks.size()) {
+                if (!DataMap.containsKey("contractNumber") && i + 1 < textBlocks.size()) {
                     java.util.regex.Matcher m2 = java.util.regex.Pattern.compile("([0-9/\\-]+)").matcher(textBlocks.get(i + 1));
-                    if (m2.find()) DataMap.put("contract_number", m2.group(1));
+                    if (m2.find()) DataMap.put("contractNumber", m2.group(1));
                 }
-                if (!DataMap.containsKey("contract_date") && i + 1 < textBlocks.size()) {
+                if (!DataMap.containsKey("contractDate") && i + 1 < textBlocks.size()) {
                     java.util.regex.Matcher d2 = java.util.regex.Pattern.compile("([0-9]{1,2}[\\.\\-/][0-9]{1,2}[\\.\\-/][0-9]{2,4})").matcher(textBlocks.get(i + 1));
-                    if (d2.find()) DataMap.put("contract_date", d2.group(1));
+                    if (d2.find()) DataMap.put("contractDate", d2.group(1));
                 } // here we do know when he signed the contract ( like when he got hired )
 
 

@@ -15,7 +15,7 @@ public enum PlaceHolders {
     salary("ų");
 
 
-
+    private final String format = "dd.MM.yyyy";
     private final String symbol;
 
     PlaceHolders(String symbol) {
