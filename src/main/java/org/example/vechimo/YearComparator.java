@@ -22,11 +22,8 @@ public class YearComparator implements Comparator< String > {
         String parts1[] = year1.split("\\.");
         String parts2[] = year2.split("\\.");
 
-        if( parts1.length != 3 || parts2.length != 3 ) {
-            System.out.println("Invalid date format for the progres map key");
-            System.out.println("This should not happen: " + year1 + " or " + year2);
-            System.out.print("Too long or too short parts: ");
-
+        if (parts1.length < 3 || parts2.length < 3) {
+            // Fallback to string comparison if the format is not as expected
             return year1.compareTo(year2);
         }
 
