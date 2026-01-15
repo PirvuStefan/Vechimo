@@ -1,11 +1,12 @@
 package org.example.vechimo;
 
 public enum PlaceHolders {
-    CNP("ε"),
-    contractNumber("№"),
-    contractDate("⏤"),
-    name("unnamed"),
-    job("unassigned");
+    CNP("ɞ"),
+    contractNumber("ě"),
+    contractDate("Ĝ"),
+    name("ɛ"),
+    currentJob("Ĺ"),
+    currentSalary("ĺ");
 
     private final String symbol;
 

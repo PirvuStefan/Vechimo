@@ -39,14 +39,14 @@ public class User { // static class to hold user data across different screens (
                 if (numIdx >= 0) {
                     java.util.regex.Matcher m = java.util.regex.Pattern.compile("([0-9/\\-]+)").matcher(line.substring(numIdx));
                     if (m.find()) {
-                        DataMap.put("contract_number", m.group(1));
+                        DataMap.put("contractNumber", m.group(1));
                     }
                 }
                 int dataIdx = line.toLowerCase().indexOf("data");
                 if (dataIdx >= 0) {
                     java.util.regex.Matcher dm = java.util.regex.Pattern.compile("([0-9]{1,2}[\\.\\-/][0-9]{1,2}[\\.\\-/][0-9]{2,4})").matcher(line.substring(dataIdx));
                     if (dm.find()) {
-                        DataMap.put("contract_date", dm.group(1));
+                        DataMap.put("contractDate", dm.group(1));
                     }
                 }
                 // fallback: check next line if not found
