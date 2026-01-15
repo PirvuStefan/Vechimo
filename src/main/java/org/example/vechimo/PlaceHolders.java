@@ -1,5 +1,8 @@
 package org.example.vechimo;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum PlaceHolders {
     CNP("ɞ"),
     today("ſ"),
@@ -14,9 +17,10 @@ public enum PlaceHolders {
     job("ū"),
     salary("ų");
 
-
     private final String format = "dd.MM.yyyy";
     private final String symbol;
+
+
 
     PlaceHolders(String symbol) {
         this.symbol = symbol;
@@ -25,4 +29,5 @@ public enum PlaceHolders {
     public String getSymbol() {
         return this.symbol;
     }
+
 }

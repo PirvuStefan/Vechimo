@@ -9,6 +9,7 @@ module org.example.vechimo {
     requires software.amazon.awssdk.services.textract;
     requires software.amazon.awssdk.regions;
     requires io.github.cdimascio.dotenv.java;
+    requires org.apache.poi.ooxml;
 
     opens org.example.vechimo to javafx.fxml;
     exports org.example.vechimo;
