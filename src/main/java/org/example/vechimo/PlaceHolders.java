@@ -6,7 +6,14 @@ public enum PlaceHolders {
     contractDate("Ĝ"),
     name("ɛ"),
     currentJob("Ĺ"),
-    currentSalary("ĺ");
+    currentSalary("ĺ"),
+    intervention("Ŕ"),
+    date("ŕ"),
+    act("ś"),
+    job("ū"),
+    salary("ų");
+
+
 
     private final String symbol;
 
