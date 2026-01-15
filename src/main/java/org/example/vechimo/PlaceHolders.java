@@ -2,6 +2,7 @@ package org.example.vechimo;
 
 public enum PlaceHolders {
     CNP("ɞ"),
+    today("ſ"),
     contractNumber("ě"),
     contractDate("Ĝ"),
     name("ɛ"),
