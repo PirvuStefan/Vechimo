@@ -1,6 +1,5 @@
 package org.example.vechimo;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -23,6 +22,9 @@ public class User { // static class to hold user data across different screens (
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
         String today = LocalDate.now().format(formatter);
         DataMap.put("today", today);
+
+
+
 
         for( int i = 0 ; i < textBlocks.size()  ; i++ ) {
             String line = textBlocks.get(i);
@@ -81,7 +83,6 @@ public class User { // static class to hold user data across different screens (
                     if (!jobValue.isEmpty()) {
                         System.out.println(jobValue + " \n\n");
                         User.currentJob = jobValue;
-                        DataMap.put("job", jobValue);
                     }
                 }
                 continue;
@@ -118,7 +119,9 @@ public class User { // static class to hold user data across different screens (
 
         System.out.println("Text blocks for map extraction: " + textBlocks);
 
+        DataMap.put("currentJob", getJob());
         updateInterventionRecord();
+        DataMap.put("currentSalary", Integer.toString(currentSalary));
 
 
 
@@ -127,7 +130,7 @@ public class User { // static class to hold user data across different screens (
 
     }
 
-    static void resetUserData(){
+    public static void resetData(){
         currentJob = "522101";
         DataMap.clear();
         ProgressMap.clear();
@@ -224,5 +227,11 @@ public class User { // static class to hold user data across different screens (
         if(line.contains("311519")) return true;
         if(line.contains("243103")) return true;
         return false;
+    }
+
+    public static void addNumber(String number){
+
+        System.out.println(number + " is being added to the data map");
+        DataMap.put("number", number);
     }
 }

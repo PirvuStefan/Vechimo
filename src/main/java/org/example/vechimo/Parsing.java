@@ -17,6 +17,7 @@ public class Parsing {
     public Parsing(String imagePath) throws IOException {
          ensureArhivaDirectory();
          User.extractMap(imagePath);
+         Certificate.generateCertificate();
     }
 
 
@@ -33,13 +34,7 @@ public class Parsing {
     // here we should have a method that returns the word pdf file after the map extraction
     // the logic of the initilialization of the map should be in the DetectText class, and here we do have a void / file return method that calls the extractMap method ( gets the placeholders and fills them in the word template )
 
-    private static void generateDocumentFromTemplate() throws IOException {
 
-        String templatePath = "template.docx";
-        File outputFile = new File(ARHIVA_DIR ,  User.DataMap.get("name") + ".docx");
-        if(!outputFile.exists()) outputFile.createNewFile();
-
-    }
 
 
 }

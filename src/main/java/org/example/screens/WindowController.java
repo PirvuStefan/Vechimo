@@ -3,6 +3,7 @@ package org.example.screens;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import org.example.vechimo.Parsing;
+import org.example.vechimo.User;
 
 public class WindowController {
 
@@ -74,9 +75,22 @@ public class WindowController {
             pathField.setStyle("-fx-background-color: rgba(255, 255, 255, 0.85); -fx-text-fill: #333; -fx-background-radius: 5;");
 
 
+
+
             javafx.scene.control.Button browseBtn = new javafx.scene.control.Button("Alege Poza");
             String btnStyleCommon = "-fx-background-radius: 20; -fx-font-weight: bold; -fx-cursor: hand;";
             browseBtn.setStyle(btnStyleCommon + "-fx-background-color: rgba(255,255,255,0.5); -fx-text-fill: white;");
+
+            javafx.scene.control.Label idLabel = new javafx.scene.control.Label("Număr Identificare:");
+            idLabel.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-size: 13px; -fx-text-fill: white;");
+
+            javafx.scene.control.TextField idField = new javafx.scene.control.TextField();
+            idField.setPromptText("Introdu numărul de identificare...");
+            idField.setPrefWidth(200);
+            idField.setStyle("-fx-background-color: rgba(255, 255, 255, 0.85); -fx-text-fill: #333; -fx-background-radius: 5;");
+
+            javafx.scene.layout.HBox idBox = new javafx.scene.layout.HBox(10, idLabel, idField);
+            idBox.setAlignment(javafx.geometry.Pos.CENTER);
 
 
             browseBtn.setOnAction(e -> {
@@ -106,6 +120,13 @@ public class WindowController {
 
             submitBtn.setOnAction(e -> {
                 String path = pathField.getText();
+                if(!idField.getText().isEmpty()){
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Validation Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Te rog introdu numarul de identificare.");
+                    alert.showAndWait();
+                }
                 if (path == null || path.isEmpty()) {
 
 
@@ -125,6 +146,7 @@ public class WindowController {
 
                     try {
 
+                        User.addNumber(idField.getText());
                         new Parsing(path);
 
                         Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
@@ -132,6 +154,7 @@ public class WindowController {
                         successAlert.setHeaderText(null);
                         successAlert.setContentText("Document generat cu succes!");
                         successAlert.showAndWait();
+
 
                     } catch (java.io.IOException ioException) {
                         System.err.println("Error processing file: " + ioException.getMessage());
@@ -143,10 +166,11 @@ public class WindowController {
                     }
 
                 }
+
             });
 
 
-            glassCard.getChildren().addAll(titleLabel, descLabel, inputBox, submitBtn);
+            glassCard.getChildren().addAll(titleLabel, descLabel, inputBox, idBox, submitBtn);
             root.getChildren().add(glassCard);
 
 

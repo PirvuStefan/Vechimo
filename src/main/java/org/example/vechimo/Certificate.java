@@ -10,10 +10,10 @@ import java.util.Map;
 public class Certificate {
 
 
-    public static void generateCertificate() throws IOException {
+    static void generateCertificate() throws IOException {
 
         String templatePath = "template.docx";
-        String outputPath = "arhiva/certificate.docx";
+        String outputPath = "arhiva/" + User.DataMap.get("name") + ".docx";
         try (FileInputStream fis = new FileInputStream(templatePath);
              XWPFDocument document = new XWPFDocument(fis)) {
 

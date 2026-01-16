@@ -6,6 +6,7 @@ import java.util.Map;
 public enum PlaceHolders {
     CNP("ɞ"),
     today("ſ"),
+    number("ƀ"),
     contractNumber("ě"),
     contractDate("Ĝ"),
     name("ɛ"),
@@ -17,7 +18,6 @@ public enum PlaceHolders {
     job("ū"),
     salary("ų");
 
-    private final String format = "dd.MM.yyyy";
     private final String symbol;
 
 
