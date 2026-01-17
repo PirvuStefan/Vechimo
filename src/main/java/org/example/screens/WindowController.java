@@ -7,6 +7,8 @@ import org.example.vechimo.User;
 
 public class WindowController {
 
+    private static boolean run = false;
+
 
 
     public static void loadMainView(Stage stage, String title) {
@@ -120,12 +122,13 @@ public class WindowController {
 
             submitBtn.setOnAction(e -> {
                 String path = pathField.getText();
-                if(!idField.getText().isEmpty()){
+                if(idField.getText().isEmpty() && !run){
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Validation Error");
                     alert.setHeaderText(null);
                     alert.setContentText("Te rog introdu numarul de identificare.");
                     alert.showAndWait();
+
                 }
                 if (path == null || path.isEmpty()) {
 
@@ -146,14 +149,25 @@ public class WindowController {
 
                     try {
 
+                        run = true;
                         User.addNumber(idField.getText());
                         new Parsing(path);
 
-                        Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
-                        successAlert.setTitle("Success");
-                        successAlert.setHeaderText(null);
-                        successAlert.setContentText("Document generat cu succes!");
-                        successAlert.showAndWait();
+                       Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                                successAlert.setTitle("Success");
+                                successAlert.setHeaderText(null);
+                                successAlert.setContentText("Document generat cu succes!");
+                                successAlert.showAndWait();
+                                // cleanup after the dialog is closed
+                                User.resetData();
+                                run = false;
+
+
+
+
+
+
+
 
 
                     } catch (java.io.IOException ioException) {
@@ -167,7 +181,11 @@ public class WindowController {
 
                 }
 
+
+
             });
+
+
 
 
             glassCard.getChildren().addAll(titleLabel, descLabel, inputBox, idBox, submitBtn);
@@ -189,9 +207,13 @@ public class WindowController {
     }
 
 
+    public static boolean isRun() {
+        return run;
+    }
 
-
-
+    public static void setRun(boolean run) {
+        WindowController.run = run;
+    }
 }
 
 

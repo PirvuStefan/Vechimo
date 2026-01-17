@@ -1,5 +1,7 @@
 package org.example.vechimo;
 
+import org.example.screens.WindowController;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -119,7 +121,7 @@ public class User { // static class to hold user data across different screens (
 
         System.out.println("Text blocks for map extraction: " + textBlocks);
 
-        DataMap.put("currentJob", getJob());
+        //DataMap.put("currentJob", getJob());
         updateInterventionRecord();
         DataMap.put("currentSalary", Integer.toString(currentSalary));
 
@@ -136,6 +138,7 @@ public class User { // static class to hold user data across different screens (
         ProgressMap.clear();
         currentSalary = 0;
         isInitialized = false;
+        WindowController.setRun(false);
     }
 
     static void printProgressMap(){
