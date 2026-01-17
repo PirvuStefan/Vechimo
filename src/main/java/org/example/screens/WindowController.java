@@ -128,6 +128,7 @@ public class WindowController {
                     alert.setHeaderText(null);
                     alert.setContentText("Te rog introdu numarul de identificare.");
                     alert.showAndWait();
+                    return;
 
                 }
                 if (path == null || path.isEmpty()) {

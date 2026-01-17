@@ -1,8 +1,5 @@
 package org.example.vechimo;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class InterventionRecord {
     String type, job, act;
     int salary;
@@ -22,12 +19,20 @@ public class InterventionRecord {
         this.act = "decizie";
     }
 
-    public String getDescription(){
+    public String getAct(){
         return switch (type) {
-            case "inregistrare" -> "Inrgistrare Contract";
+            case "inregistrare" -> "CIM " + User.DataMap.get("contractNumber");
+            case "majorare" -> "DECIZIE";
+            case "incetare" -> "DECIZIE";
+            default -> "Unknown intervention type";
+        };
+    }
+
+    public String getDescription(){
+        return switch (type){
+            case "inregistrare" -> "Inregistrare contract";
             case "majorare" -> "Majorare salariu";
             case "incetare" -> "Incetare contract";
-            case "inspection" -> "Inspection:";
             default -> "Unknown intervention type";
         };
     }
@@ -161,6 +166,17 @@ public class InterventionRecord {
             }
         }
         return true;
+    }
+
+     String getJob(){
+        return switch (job) {
+            case "522101" -> "VANZATOR";
+            case "142008" -> "MANAGER DE ZONA";
+            case "112018" -> "DIRECTOR VANZARI";
+            case "311519" -> "TEHNICIAN MECANIC";
+            case "243103" -> "SPECIALIST MARKETING";
+            default -> "GESTIONAR DEPOZIT";
+        };
     }
 
 }
