@@ -29,6 +29,7 @@ public class User { // static class to hold user data across different screens (
 
 
 
+
         for( int i = 0 ; i < textBlocks.size()  ; i++ ) {
             String line = textBlocks.get(i);
 
@@ -125,6 +126,7 @@ public class User { // static class to hold user data across different screens (
         //DataMap.put("currentJob", getJob());
         updateInterventionRecord();
         DataMap.put("currentSalary", Integer.toString(currentSalary));
+        DataMap.put("currentJob", getJob());
 
 
 
@@ -214,6 +216,8 @@ public class User { // static class to hold user data across different screens (
     }
 
     static String getJob(){
+
+        if(currentJob == null) return "VANZATOR";
         return switch (currentJob) {
                         case "522101" -> "VANZATOR";
                         case "142008" -> "MANAGER DE ZONA";

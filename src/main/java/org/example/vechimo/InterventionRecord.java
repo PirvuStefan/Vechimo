@@ -37,6 +37,8 @@ public class InterventionRecord {
         };
     }
 
+
+
     public void print(){
         System.out.print(type + " " + job + " " + act + " " + salary + " ; ");
     }
@@ -169,6 +171,7 @@ public class InterventionRecord {
     }
 
      String getJob(){
+        if(job == null) return "VANZATOR";
         return switch (job) {
             case "522101" -> "VANZATOR";
             case "142008" -> "MANAGER DE ZONA";

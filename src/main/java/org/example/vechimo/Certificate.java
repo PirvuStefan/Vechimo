@@ -12,20 +12,14 @@ public class Certificate {
 
     static void generateCertificate() throws IOException {
 
-        String outputPath = "arhiva/" + User.DataMap.get("name") + ".docx";
+        String outputPath = "arhiva/" + User.DataMap.get("name") + " AdeverintaVechime.docx";
 
         try (InputStream templateStream = Certificate.class.getResourceAsStream("/template.docx");
              XWPFDocument document = new XWPFDocument(templateStream)) {
 
-            if (templateStream == null) {
-                throw new IOException("Template file not found in resources");
-            }
-
-            // Replace placeholders in paragraphs
             modifyParagraphs(document.getParagraphs(), document, false);
 
 
-            // Replace placeholders in tables too (many contracts use tables)
             for (XWPFTable table : document.getTables()) {
                 for (XWPFTableRow row : table.getRows()) {
                     for (XWPFTableCell cell : row.getTableCells()) {
@@ -34,7 +28,6 @@ public class Certificate {
                 }
             }
 
-            // Save the new document
             try (FileOutputStream fos = new FileOutputStream(outputPath)) {
                 document.write(fos);
             }
@@ -53,7 +46,6 @@ public class Certificate {
 
             String text = paragraphBuilder.toString();
             if (!text.isEmpty()) {
-                // Replace placeholders from user data only within this paragraph
                 for (Map.Entry<String, String> entry : User.DataMap.entrySet()) {
                     String key = entry.getKey();
                     PlaceHolders placeholder = PlaceHolders.valueOf(key);
@@ -96,9 +88,9 @@ public class Certificate {
                 }
             }
 
-            // Debug: print paragraph text after replacements
             System.out.println(paragraph.getText());
         }
     }
+
 
 }
