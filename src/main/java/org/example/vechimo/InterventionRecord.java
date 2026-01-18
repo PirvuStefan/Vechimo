@@ -22,8 +22,7 @@ public class InterventionRecord {
     public String getAct(){
         return switch (type) {
             case "inregistrare" -> "CIM " + User.DataMap.get("contractNumber");
-            case "majorare" -> "DECIZIE";
-            case "incetare" -> "DECIZIE";
+            case "majorare", "incetare", "promovare" -> "DECIZIE";
             default -> "Unknown intervention type";
         };
     }
@@ -33,6 +32,7 @@ public class InterventionRecord {
             case "inregistrare" -> "Inregistrare contract";
             case "majorare" -> "Majorare salariu";
             case "incetare" -> "Incetare contract";
+            case "promovare" -> "Act aditional";
             default -> "Unknown intervention type";
         };
     }

@@ -43,46 +43,61 @@ public class Certificate {
 
     private static void modifyParagraphs(List<XWPFParagraph> paragraphs, XWPFDocument document, boolean table) {
         for (XWPFParagraph paragraph : paragraphs) {
-            for (XWPFRun run : paragraph.getRuns()) {
-                String text = run.getText(0);
-                if (text != null) {
-                    for (Map.Entry<String, String> entry : User.DataMap.entrySet()) {
-                        String key = entry.getKey();
-                        PlaceHolders placeholder = PlaceHolders.valueOf(key);
-                        text = text.replace(placeholder.getSymbol(), entry.getValue());
-                    }
+            // Concatenate all runs to work on the paragraph as a whole
+            StringBuilder paragraphBuilder = new StringBuilder();
+            List<XWPFRun> runs = paragraph.getRuns();
+            for (XWPFRun run : runs) {
+                String r = run.getText(0);
+                if (r != null) paragraphBuilder.append(r);
+            }
 
-                    if(table){
-                        int count = 1;
-                        for(Map.Entry<String, List< InterventionRecord >> entry : User.ProgressMap.entrySet()) {
-                            for( InterventionRecord record : entry.getValue() ) {
-                                String description = record.getDescription();
-                                String date = entry.getKey();
-                                String act = record.getAct();
-                                String salary = String.valueOf(record.salary);
-                                String job = record.getJob();
-                                PlaceHolders placeholder = PlaceHolders.valueOf("date");
-                                text = text.replace(count + placeholder.getSymbol(), date);
-                                placeholder = PlaceHolders.valueOf("intervention");
-                                text = text.replace(count + placeholder.getSymbol(), description);
-                                placeholder = PlaceHolders.valueOf("act");
-                                text = text.replace(count + placeholder.getSymbol(), act);
-                                placeholder = PlaceHolders.valueOf("salary");
-                                text = text.replace(count + placeholder.getSymbol(), salary);
-                                placeholder = PlaceHolders.valueOf("job");
-                                text = text.replace(count + placeholder.getSymbol(), job);
-                                count++;
-                                // TODO: numbers do not work when we concatenate them with the placeholder symbol
-                                // in order to fix this , we choose 1-15 distinct symbols from latin extended-b and use them to map the numbers from 1 to 15
-                                // and additional function is needed to get the symbol from number ( int -> symbol )
-                                // or just put the symbols in the enum and get them by their ordinal value
-                            }
+            String text = paragraphBuilder.toString();
+            if (!text.isEmpty()) {
+                // Replace placeholders from user data only within this paragraph
+                for (Map.Entry<String, String> entry : User.DataMap.entrySet()) {
+                    String key = entry.getKey();
+                    PlaceHolders placeholder = PlaceHolders.valueOf(key);
+                    text = text.replace(placeholder.getSymbol(), entry.getValue());
+                }
+
+                if (table) {
+                    int count = 1;
+                    for (Map.Entry<String, List<InterventionRecord>> progEntry : User.ProgressMap.entrySet()) {
+
+                        for (InterventionRecord record : progEntry.getValue()) {
+                            String description = record.getDescription();
+                            String date = progEntry.getKey();
+                            String act = record.getAct();
+                            String salary = String.valueOf(record.salary);
+                            String job = record.getJob();
+
+                            text = text.replace("Dat" + count + "r", date);
+                            text = text.replace("Inreg" + count + "r", description);
+                            text = text.replace("Act" + count + "r", act);
+                            text = text.replace("Sal" + count + "r", salary);
+                            text = text.replace("Mes" + count + "r", job);
+
+                            count++;
+
                         }
                     }
-                    run.setText(text, 0);
                 }
-                System.out.println(run.getText(0)); // Debugging line to print run text
+
+                // Replace paragraph content: set first run and remove the rest
+                if (!runs.isEmpty()) {
+                    XWPFRun firstRun = runs.get(0);
+                    firstRun.setText(text, 0);
+                    for (int i = runs.size() - 1; i >= 1; i--) {
+                        paragraph.removeRun(i);
+                    }
+                } else {
+                    XWPFRun newRun = paragraph.createRun();
+                    newRun.setText(text, 0);
+                }
             }
+
+            // Debug: print paragraph text after replacements
+            System.out.println(paragraph.getText());
         }
     }
 

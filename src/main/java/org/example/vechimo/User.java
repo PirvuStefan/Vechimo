@@ -28,6 +28,7 @@ public class User { // static class to hold user data across different screens (
 
 
 
+
         for( int i = 0 ; i < textBlocks.size()  ; i++ ) {
             String line = textBlocks.get(i);
 
