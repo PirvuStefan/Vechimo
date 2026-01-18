@@ -242,4 +242,6 @@ public class User { // static class to hold user data across different screens (
         System.out.println(number + " is being added to the data map");
         DataMap.put("number", number);
     }
+
+
 }

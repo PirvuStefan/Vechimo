@@ -57,17 +57,12 @@ public class Certificate {
                     for (Map.Entry<String, List<InterventionRecord>> progEntry : User.ProgressMap.entrySet()) {
 
                         for (InterventionRecord record : progEntry.getValue()) {
-                            String description = record.getDescription();
-                            String date = progEntry.getKey();
-                            String act = record.getAct();
-                            String salary = String.valueOf(record.salary);
-                            String job = record.getJob();
 
-                            text = text.replace("Dat" + count + "r", date);
-                            text = text.replace("Inreg" + count + "r", description);
-                            text = text.replace("Act" + count + "r", act);
-                            text = text.replace("Sal" + count + "r", salary);
-                            text = text.replace("Mes" + count + "r", job);
+                            text = text.replace("Dat" + count + "r", getDataFormat(progEntry.getKey()));
+                            text = text.replace("Inreg" + count + "r", record.getDescription());
+                            text = text.replace("Act" + count + "r", record.getAct());
+                            text = text.replace("Sal" + count + "r", String.valueOf(record.salary));
+                            text = text.replace("Mes" + count + "r", record.getJob());
 
                             count++;
 
@@ -90,6 +85,15 @@ public class Certificate {
 
             System.out.println(paragraph.getText());
         }
+    }
+
+    private static String getDataFormat(String key) {
+        String[] parts = key.split("\\."); // Split by dot (requires double backslash)
+        if (parts.length == 3) {
+            // Rearrange from [dd, MM, yyyy] to yyyy.MM.dd
+            return parts[2] + "." + parts[1] + "." + parts[0];
+        }
+        return key; // Return original if format is unexpected
     }
 
 
