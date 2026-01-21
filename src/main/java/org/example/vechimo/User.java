@@ -19,7 +19,7 @@ public class User { // static class to hold user data across different screens (
 
     public static void extractMap(String imagePath) throws IOException {
 
-        List < String > textBlocks = ProcessorFactory.getProcessor(true).extractTextLines(imagePath);
+        List < String > textBlocks = ProcessorFactory.getProcessor(false).extractTextLines(imagePath);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
         String today = LocalDate.now().format(formatter);
