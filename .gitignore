@@ -46,3 +46,7 @@ build/
 .env
 test.txt
 src/main/resources/template.docx
+src/main/resources/template_10.docx
+src/main/resources/template_15.docx
+src/main/resources/template_20.docx
+src/main/resources/template_25.docx

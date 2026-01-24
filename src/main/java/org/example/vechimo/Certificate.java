@@ -14,7 +14,7 @@ public class Certificate {
 
         String outputPath = "arhiva/" + User.DataMap.get("name") + " AdeverintaVechime.docx";
 
-        try (InputStream templateStream = Certificate.class.getResourceAsStream("/template.docx");
+        try (InputStream templateStream = Certificate.class.getResourceAsStream(getTemplatePath(User.count));
              XWPFDocument document = new XWPFDocument(templateStream)) {
 
             modifyParagraphs(document.getParagraphs(), document, false);
@@ -94,6 +94,12 @@ public class Certificate {
             return parts[2] + "." + parts[1] + "." + parts[0];
         }
         return key; // Return original if format is unexpected
+    }
+
+    private static String getTemplatePath(int count) {
+        if(count < 10) count = 10;
+        else if(count > 20) count = 20;
+        return "/template_" + (count - count % 5) +".docx";
     }
 
 
