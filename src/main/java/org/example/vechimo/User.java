@@ -41,7 +41,9 @@ public class User { // static class to hold user data across different screens (
                 }
             }
             else if(line.contains("Salariat:")){
-                DataMap.put("name", textBlocks.get(i+1).trim());
+                if(!textBlocks.get(i+1).trim().contains("identificat")) DataMap.put("name", textBlocks.get(i+1).trim());
+                else if(!textBlocks.get(i+2).trim().contains("identificat")) DataMap.put("name", textBlocks.get(i+2).trim());
+                else DataMap.put("name", "nume_nedefinit");
             }
             else if (line.toLowerCase().contains("contract individual de munc") ) {
                 // extract contract number (e.g. 1039/138) after "num" and date (e.g. 15.02.2018) after "data"
