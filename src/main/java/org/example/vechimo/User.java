@@ -94,7 +94,12 @@ public class User { // static class to hold user data across different screens (
                 continue;
             }
 
+            if(line.contains("Se suspenda contract")){
 
+                InterventionRecord.putInterventionRecordSuspendare(line, textBlocks, i);
+                continue;
+
+            }
 
 
             if(line.contains("Salariu brut") && textBlocks.get(i-1).contains("COR") && textBlocks.get(i-1).contains("Data inceput")){

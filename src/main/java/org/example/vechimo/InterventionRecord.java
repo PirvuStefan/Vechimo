@@ -1,7 +1,11 @@
 package org.example.vechimo;
 
+import java.util.List;
+
+
 public class InterventionRecord {
     String type, job, act;
+    String date = "neither";
     int salary;
     InterventionRecord(String type, String job, String act,int salary){
         this.type = type;
@@ -9,6 +13,19 @@ public class InterventionRecord {
         this.act = act;
         this.salary = salary;
     }
+
+    InterventionRecord(String type, String job, String act, int salary, String date){
+        this.type = type;
+        this.job = job;
+        this.act = act;
+        this.salary = salary;
+        this.date = date;
+    }//this is aimed for suspendare
+
+    public void setSuspendareAct(String date){
+        this.date = date;
+    }
+
 
     //
 
@@ -26,6 +43,8 @@ public class InterventionRecord {
             default -> "Unknown intervention type";
         };
     }
+    // la medical sa fie CM
+    // la restul decizilor DECIZIE, in cazul de suspendare
 
     public String getDescription(){
         return switch (type){
@@ -132,8 +151,33 @@ public class InterventionRecord {
             }
         }
 
+
+
         InterventionRecord record = new InterventionRecord("inregistrare", User.currentJob, "cim ", salary);
         User.addInterventionRecord(key, record);
+    }
+
+    static void putInterventionRecordSuspendare(String line, List< String > textBlocks, int position){
+            // String line is tehnically redundant parameter here, since line is also in textBlocks, but we keep it for consistency
+
+//        Se suspenda contract intre 24.03.2020 si 31.05.2020 in baza temeiului legal Legea 53/2003 art. 52 alin.(1)
+//        litera c) In cazul întreruperii sau reducerii temporare a activităţii, fără încetarea raportului de muncă,
+//        pentru motive economice, tehnologice, structurale sau similare
+
+        java.util.regex.Matcher suspendMatcher = java.util.regex.Pattern
+                .compile("(\\d{2}\\.\\d{2}\\.\\d{4})\\s+si\\s+(\\d{2}\\.\\d{2}\\.\\d{4})")
+                .matcher(line);
+        String date = null;
+        if (suspendMatcher.find()) {
+            date = suspendMatcher.group(1) + "-" + suspendMatcher.group(2);
+        }
+
+        String key = textBlocks.get(position - 1).trim();
+
+        InterventionRecord record = new InterventionRecord("suspendare", User.currentJob, "decizie", getSalaryPresent(key), date);
+        User.addInterventionRecord(key, record);
+
+
     }
 
     private static int getSalaryPresent(String key){

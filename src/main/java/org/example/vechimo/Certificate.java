@@ -17,7 +17,7 @@ public class Certificate {
         try (InputStream templateStream = Certificate.class.getResourceAsStream(getTemplatePath(User.count));
              XWPFDocument document = new XWPFDocument(templateStream)) {
 
-            modifyParagraphs(document.getParagraphs(), document, false);
+             modifyParagraphs(document.getParagraphs(), document, false);
 
 
             for (XWPFTable table : document.getTables()) {
