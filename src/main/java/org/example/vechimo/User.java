@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class User { // static class to hold user data across different screens ( no abstract class since we only have one user during runtime )
 
@@ -19,7 +20,7 @@ public class User { // static class to hold user data across different screens (
 
     public static void extractMap(String imagePath) throws IOException {
 
-        List < String > textBlocks = ProcessorFactory.getProcessor(false).extractTextLines(imagePath);
+        List < String > textBlocks = ProcessorFactory.getProcessor(true).extractTextLines(imagePath);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
         String today = LocalDate.now().format(formatter);
@@ -94,10 +95,17 @@ public class User { // static class to hold user data across different screens (
                 continue;
             }
 
-            if(line.contains("Se suspenda contract")){
 
-                InterventionRecord.putInterventionRecordSuspendare(line, textBlocks, i);
-                continue;
+
+            if(line.contains("Suspendari in timpul contractului") || line.contains("Suspendări în timpul contractului")){
+                // from this line we should extract the suspension periods and reasons
+                // this is a bit more complex and may require additional parsing logic based on the expected format
+                // this handles all the suspension records and adds them to the progress map with the type "suspension" and the reason as description
+                // further swaping in the InterventionRecord array might be needed if the intervention share the same key (date) with another intervention, but this should be handled in the updateInterventionRecord function
+               AtomicInteger pos = new AtomicInteger(i);
+                handleSuspensions(textBlocks, pos);
+                i = pos.get();
+
 
             }
 
@@ -140,6 +148,31 @@ public class User { // static class to hold user data across different screens (
         User.print();
 
 
+    }
+
+    static void handleSuspensions(List<String> textBlocks, AtomicInteger pos){
+        pos.incrementAndGet();; // move to the next line after the "Suspendari in timpul contractului" line
+        while(pos.get() < textBlocks.size() && !textBlocks.get(pos.get()).trim().isEmpty()){
+            String[] dates = new String[2];
+
+            if(isSuspensionRecord(textBlocks.get(pos.get()), dates)){
+                InterventionRecord.putInterventionRecordSuspendare(textBlocks, pos, dates);
+
+            }
+
+            pos.incrementAndGet();
+
+        }
+    }
+
+    static boolean isSuspensionRecord(String line, String[] dates){
+        if (line == null) return false;
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                "\\b([0-9]{1,2}[\\.\\-/][0-9]{1,2}[\\.\\-/][0-9]{2,4})\\s*(?:-|–|—)?\\s*([0-9]{1,2}[\\.\\-/][0-9]{1,2}[\\.\\-/][0-9]{2,4})\\b"
+        ).matcher(line);
+        dates[0] = m.find() ? m.group(1) : null;
+        dates[1] = m.find() ? m.group(2) : null;
+        return m.find();
     }
 
     public static void resetData(){

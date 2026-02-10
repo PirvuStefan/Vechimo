@@ -1,6 +1,7 @@
 package org.example.vechimo;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class InterventionRecord {
@@ -59,7 +60,7 @@ public class InterventionRecord {
 
 
     public void print(){
-        System.out.print(type + " " + job + " " + act + " " + salary + " ; ");
+        System.out.print(type + " " + job + " " + act + " " + salary + (!date.equals("neither") ? " " + date : "") + " ; ");
     }
 
     static void putInterventionRecordMajorare(String line, String beforeline) {
@@ -117,7 +118,6 @@ public class InterventionRecord {
 
 
 
-
         InterventionRecord record = new InterventionRecord("promovare", User.currentJob, "decizie", getSalaryPresent(key));
 
         User.addInterventionRecord(key, record);
@@ -157,25 +157,27 @@ public class InterventionRecord {
         User.addInterventionRecord(key, record);
     }
 
-    static void putInterventionRecordSuspendare(String line, List< String > textBlocks, int position){
+    static void putInterventionRecordSuspendare(List< String > textBlocks, AtomicInteger position, String[] dates){
             // String line is tehnically redundant parameter here, since line is also in textBlocks, but we keep it for consistency
 
 //        Se suspenda contract intre 24.03.2020 si 31.05.2020 in baza temeiului legal Legea 53/2003 art. 52 alin.(1)
 //        litera c) In cazul întreruperii sau reducerii temporare a activităţii, fără încetarea raportului de muncă,
 //        pentru motive economice, tehnologice, structurale sau similare
+        boolean medical = false;
+        int finish = position.get() + 3;
 
-        java.util.regex.Matcher suspendMatcher = java.util.regex.Pattern
-                .compile("(\\d{2}\\.\\d{2}\\.\\d{4})\\s+si\\s+(\\d{2}\\.\\d{2}\\.\\d{4})")
-                .matcher(line);
-        String date = null;
-        if (suspendMatcher.find()) {
-            date = suspendMatcher.group(1) + "-" + suspendMatcher.group(2);
+        while(position.get() < finish){
+            String line = textBlocks.get(position.get()).toLowerCase();
+            if(line.contains("pentru incapacitate temporară de muncă") || line.contains("pentru incapacitate temporara de munca") || line.contains("pentru incapacitate temporara de muncă")){
+                medical = true;
+            }
+            position.getAndIncrement();
         }
 
-        String key = textBlocks.get(position - 1).trim();
 
-        InterventionRecord record = new InterventionRecord("suspendare", User.currentJob, "decizie", getSalaryPresent(key), date);
-        User.addInterventionRecord(key, record);
+
+        InterventionRecord record = new InterventionRecord("suspendare", User.currentJob, "decizie", getSalaryPresent(dates[0]), dates[2]);
+        User.addInterventionRecord(dates[0], record);
 
 
     }
@@ -222,6 +224,9 @@ public class InterventionRecord {
             case "112018" -> "DIRECTOR VANZARI";
             case "311519" -> "TEHNICIAN MECANIC";
             case "243103" -> "SPECIALIST MARKETING";
+            case "263104" -> """
+                    CONSILIER/EXPERT/INSPECTOR/REFERENT/ECONOMIST\s
+                     ÎN COMERŢ ŞI MARKETING""";
             default -> "GESTIONAR DEPOZIT";
         };
     }

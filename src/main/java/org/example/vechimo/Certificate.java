@@ -98,7 +98,7 @@ public class Certificate {
 
     private static String getTemplatePath(int count) {
         if(count < 10) count = 10;
-        else if(count > 20) count = 20;
+        else if(count > 20) count = 25;
         return "/template_" + (count - count % 5) +".docx";
     }
 
