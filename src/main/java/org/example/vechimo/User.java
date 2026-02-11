@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+
 public class User { // static class to hold user data across different screens ( no abstract class since we only have one user during runtime )
 
     static String currentJob ; // default value if for some reason the parsing fails to initialize it
@@ -98,13 +99,15 @@ public class User { // static class to hold user data across different screens (
 
 
             if(line.contains("Suspendari in timpul contractului") || line.contains("Suspendări în timpul contractului")){
+
+                //Suspendări în timpul contractului
                 // from this line we should extract the suspension periods and reasons
                 // this is a bit more complex and may require additional parsing logic based on the expected format
                 // this handles all the suspension records and adds them to the progress map with the type "suspension" and the reason as description
                 // further swaping in the InterventionRecord array might be needed if the intervention share the same key (date) with another intervention, but this should be handled in the updateInterventionRecord function
                AtomicInteger pos = new AtomicInteger(i);
-                handleSuspensions(textBlocks, pos);
-                i = pos.get();
+               handleSuspensions(textBlocks, pos);
+               i = pos.get();
 
 
             }
@@ -138,10 +141,9 @@ public class User { // static class to hold user data across different screens (
 
         System.out.println("Text blocks for map extraction: " + textBlocks);
 
-        //DataMap.put("currentJob", getJob());
         updateInterventionRecord();
         DataMap.put("currentSalary", Integer.toString(currentSalary));
-        DataMap.put("currentJob", getJob());
+        DataMap.put("currentJob", getCurrentJob());
 
 
 
@@ -151,6 +153,7 @@ public class User { // static class to hold user data across different screens (
     }
 
     static void handleSuspensions(List<String> textBlocks, AtomicInteger pos){
+        System.out.println("Handling suspensions starting \n\n\n\n" );
         pos.incrementAndGet();; // move to the next line after the "Suspendari in timpul contractului" line
         while(pos.get() < textBlocks.size() && !textBlocks.get(pos.get()).trim().isEmpty()){
             String[] dates = new String[2];
@@ -165,14 +168,21 @@ public class User { // static class to hold user data across different screens (
         }
     }
 
-    static boolean isSuspensionRecord(String line, String[] dates){
+    static boolean isSuspensionRecord(String line, String[] dates) {
         if (line == null) return false;
+
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(
                 "\\b([0-9]{1,2}[\\.\\-/][0-9]{1,2}[\\.\\-/][0-9]{2,4})\\s*(?:-|–|—)?\\s*([0-9]{1,2}[\\.\\-/][0-9]{1,2}[\\.\\-/][0-9]{2,4})\\b"
         ).matcher(line);
-        dates[0] = m.find() ? m.group(1) : null;
-        dates[1] = m.find() ? m.group(2) : null;
-        return m.find();
+
+        if (m.find()) {
+            dates[0] = m.group(1); // First capturing group from the match
+            dates[1] = m.group(2); // Second capturing group from the SAME match
+            System.out.println("Found: " + dates[0] + " to " + dates[1]);
+            return true;
+        }
+
+        return false;
     }
 
     public static void resetData(){
@@ -255,7 +265,7 @@ public class User { // static class to hold user data across different screens (
         System.out.println("Total intervention records: " + count);
     }
 
-    static String getJob(){
+    static String getCurrentJob(){
 
         if(currentJob == null) return "VANZATOR";
         return switch (currentJob) {
@@ -264,6 +274,9 @@ public class User { // static class to hold user data across different screens (
                         case "112018" -> "DIRECTOR VANZARI";
                         case "311519" -> "TEHNICIAN MECANIC";
                         case "243103" -> "SPECIALIST MARKETING";
+                        case "263104" -> """
+                             CONSILIER/EXPERT/INSPECTOR/REFERENT/ECONOMIST\s
+                              ÎN COMERŢ ŞI MARKETING""";
                         default -> "GESTIONAR DEPOZIT";
                     };
     }
@@ -274,6 +287,7 @@ public class User { // static class to hold user data across different screens (
         if(line.contains("112018")) return true;
         if(line.contains("311519")) return true;
         if(line.contains("243103")) return true;
+        if(line.contains("263104")) return true;
         return false;
     }
 

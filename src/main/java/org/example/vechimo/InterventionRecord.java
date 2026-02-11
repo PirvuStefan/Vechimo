@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class InterventionRecord {
     String type, job, act;
+    boolean medical = false;
     String date = "neither";
     int salary;
     InterventionRecord(String type, String job, String act,int salary){
@@ -38,9 +39,10 @@ public class InterventionRecord {
     }
 
     public String getAct(){
+        if(medical) return "CM";
         return switch (type) {
             case "inregistrare" -> "CIM " + User.DataMap.get("contractNumber");
-            case "majorare", "incetare", "promovare" -> "DECIZIE";
+            case "majorare", "incetare", "promovare", "suspendare" -> "DECIZIE";
             default -> "Unknown intervention type";
         };
     }
@@ -158,25 +160,25 @@ public class InterventionRecord {
     }
 
     static void putInterventionRecordSuspendare(List< String > textBlocks, AtomicInteger position, String[] dates){
-            // String line is tehnically redundant parameter here, since line is also in textBlocks, but we keep it for consistency
 
-//        Se suspenda contract intre 24.03.2020 si 31.05.2020 in baza temeiului legal Legea 53/2003 art. 52 alin.(1)
-//        litera c) In cazul întreruperii sau reducerii temporare a activităţii, fără încetarea raportului de muncă,
-//        pentru motive economice, tehnologice, structurale sau similare
+
         boolean medical = false;
         int finish = position.get() + 3;
 
+        InterventionRecord record = new InterventionRecord("suspendare", User.currentJob, "decizie", getSalaryPresent(dates[0]), dates[1]);
+
         while(position.get() < finish){
-            String line = textBlocks.get(position.get()).toLowerCase();
+            String line = textBlocks.get(position.getAndIncrement()).toLowerCase();
             if(line.contains("pentru incapacitate temporară de muncă") || line.contains("pentru incapacitate temporara de munca") || line.contains("pentru incapacitate temporara de muncă")){
                 medical = true;
             }
-            position.getAndIncrement();
         }
 
+        record.medical = medical;
 
 
-        InterventionRecord record = new InterventionRecord("suspendare", User.currentJob, "decizie", getSalaryPresent(dates[0]), dates[2]);
+
+        System.out.println("Adding suspensions " + dates[0]);
         User.addInterventionRecord(dates[0], record);
 
 
