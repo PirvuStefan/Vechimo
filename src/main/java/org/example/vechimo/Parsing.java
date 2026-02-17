@@ -14,9 +14,9 @@ public class Parsing {
     private static final String ARHIVA_DIR = "arhiva";
 
 
-    public Parsing(String imagePath) throws IOException {
+    public Parsing(String imagePath1, String imagePath2) throws IOException {
          ensureArhivaDirectory();
-         User.extractMap(imagePath);
+         User.extractMap(imagePath1, imagePath2);
          Certificate.generateCertificate();
     }
 

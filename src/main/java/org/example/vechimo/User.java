@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 
 public class User { // static class to hold user data across different screens ( no abstract class since we only have one user during runtime )
@@ -19,9 +20,12 @@ public class User { // static class to hold user data across different screens (
     static Map<String , String> DataMap = new HashMap<>();
     static TreeMap<String, List<InterventionRecord>> ProgressMap = new TreeMap<>(new org.example.vechimo.YearComparator());
 
-    public static void extractMap(String imagePath) throws IOException {
+    public static void extractMap(String imagePath1,String imagePath2) throws IOException {
 
-        List < String > textBlocks = ProcessorFactory.getProcessor(true).extractTextLines(imagePath);
+        boolean test = false;
+
+        List < String > textBlocks = ProcessorFactory.getProcessor(test).extractTextLines(imagePath1);
+        if(imagePath2!=null) textBlocks = Stream.concat(textBlocks.stream(), ProcessorFactory.getProcessor(test).extractTextLines(imagePath2).stream()).toList();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
         String today = LocalDate.now().format(formatter);
@@ -142,9 +146,9 @@ public class User { // static class to hold user data across different screens (
         System.out.println("Text blocks for map extraction: " + textBlocks);
 
         updateInterventionRecord();
+        updateSuspensions();
         DataMap.put("currentSalary", Integer.toString(currentSalary));
         DataMap.put("currentJob", getCurrentJob());
-
 
 
         User.print();
@@ -248,6 +252,25 @@ public class User { // static class to hold user data across different screens (
         }
 
 
+    }
+
+    static void updateSuspensions(){
+        InterventionRecord lastSuspension = null;
+        for(int i = 0 ; i < ProgressMap.size() ; i++ ) {
+            Map.Entry<String, List<InterventionRecord> > entry = (Map.Entry<String, List<InterventionRecord> >) ProgressMap.entrySet().toArray()[i];
+            for(int j = 0 ; j < entry.getValue().size() ; j++ ) {
+                if(lastSuspension == null) {
+                    lastSuspension = entry.getValue().get(j);
+                    continue;
+                }
+                if(entry.getValue().get(j).type.equals("suspendare")){
+                    entry.getValue().get(j).job = lastSuspension.job;
+
+                }
+                lastSuspension = entry.getValue().get(j);
+
+            }
+        }
     }
 
     static void printDataMap(){

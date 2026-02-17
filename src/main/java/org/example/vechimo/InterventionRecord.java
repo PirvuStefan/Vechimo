@@ -62,7 +62,7 @@ public class InterventionRecord {
 
 
     public void print(){
-        System.out.print(type + " " + job + " " + act + " " + salary + (!date.equals("neither") ? " " + date : "") + " ; ");
+        System.out.print(type + " " + job + " " + act + " " + salary + (!date.equals("neither") ? " " + date : "") + (medical ? " " + "medical" : "") + " ; ");
     }
 
     static void putInterventionRecordMajorare(String line, String beforeline) {

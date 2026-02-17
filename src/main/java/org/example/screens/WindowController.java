@@ -9,8 +9,6 @@ public class WindowController {
 
     private static boolean run = false;
 
-
-
     public static void loadMainView(Stage stage, String title) {
         try {
 
@@ -76,12 +74,19 @@ public class WindowController {
             pathField.setPrefWidth(220);
             pathField.setStyle("-fx-background-color: rgba(255, 255, 255, 0.85); -fx-text-fill: #333; -fx-background-radius: 5;");
 
+            // second file selector field
+            javafx.scene.control.TextField pathField2 = new javafx.scene.control.TextField();
+            pathField2.setPromptText("Niciun fișier selectat...");
+            pathField2.setEditable(false);
+            pathField2.setPrefWidth(220);
+            pathField2.setStyle("-fx-background-color: rgba(255, 255, 255, 0.85); -fx-text-fill: #333; -fx-background-radius: 5;");
 
-
-
-            javafx.scene.control.Button browseBtn = new javafx.scene.control.Button("Alege Poza");
+            javafx.scene.control.Button browseBtn = new javafx.scene.control.Button("Alege PDF 1");
             String btnStyleCommon = "-fx-background-radius: 20; -fx-font-weight: bold; -fx-cursor: hand;";
             browseBtn.setStyle(btnStyleCommon + "-fx-background-color: rgba(255,255,255,0.5); -fx-text-fill: white;");
+
+            javafx.scene.control.Button browseBtn2 = new javafx.scene.control.Button("Alege PDF 2");
+            browseBtn2.setStyle(btnStyleCommon + "-fx-background-color: rgba(255,255,255,0.5); -fx-text-fill: white;");
 
             javafx.scene.control.Label idLabel = new javafx.scene.control.Label("Număr Identificare:");
             idLabel.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-size: 13px; -fx-text-fill: white;");
@@ -97,7 +102,7 @@ public class WindowController {
 
             browseBtn.setOnAction(e -> {
                 javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
-                fileChooser.setTitle("Selecteaza Poza cu PDF-ul");
+                fileChooser.setTitle("Selecteaza PDF 1");
                 fileChooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
                 java.io.File selectedFile = fileChooser.showOpenDialog(stage);
                 if (selectedFile != null) {
@@ -105,10 +110,23 @@ public class WindowController {
                 }
             });
 
+            browseBtn2.setOnAction(e -> {
+                javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+                fileChooser.setTitle("Selecteaza PDF 2");
+                fileChooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
+                java.io.File selectedFile = fileChooser.showOpenDialog(stage);
+                if (selectedFile != null) {
+                    pathField2.setText(selectedFile.getAbsolutePath());
+                }
+            });
 
+            // first selector row
             javafx.scene.layout.HBox inputBox = new javafx.scene.layout.HBox(10, pathField, browseBtn);
             inputBox.setAlignment(javafx.geometry.Pos.CENTER);
 
+            // second selector row (under the first)
+            javafx.scene.layout.HBox inputBox2 = new javafx.scene.layout.HBox(10, pathField2, browseBtn2);
+            inputBox2.setAlignment(javafx.geometry.Pos.CENTER);
 
             javafx.scene.control.Button submitBtn = new javafx.scene.control.Button("Generează Document");
             submitBtn.setPrefSize(200, 40);
@@ -121,8 +139,9 @@ public class WindowController {
 
 
             submitBtn.setOnAction(e -> {
-                String path = pathField.getText();
-                if(idField.getText().isEmpty() && !run){
+                String path1 = pathField.getText();
+                String path2 = pathField2.getText();
+                if (idField.getText().isEmpty() && !run) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Validation Error");
                     alert.setHeaderText(null);
@@ -131,44 +150,34 @@ public class WindowController {
                     return;
 
                 }
-                if (path == null || path.isEmpty()) {
-
-
-
-
-
+                // require both PDFs
+                if (path1 == null || path1.isEmpty()) {
 
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Validation Error");
                     alert.setHeaderText(null);
-                    alert.setContentText("Te rog selecteaza un fisier mai intai.");
+                    alert.setContentText("Te rog selecteaza un fisier mai intai.(PDF 1)");
                     alert.showAndWait();
                     System.out.println("Validation Error: Please select a file first.");
 
                 } else {
-                    System.out.println("Processing PDF at: " + path);
+                    System.out.println("Processing PDFs at: " + path1 + " and " + path2);
 
                     try {
 
                         run = true;
                         User.addNumber(idField.getText());
-                        new Parsing(path);
+                        // pass first PDF path into Parsing (adjust Parsing if it needs both)
+                        new Parsing(path1, path2);
 
-                       Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
-                                successAlert.setTitle("Success");
-                                successAlert.setHeaderText(null);
-                                successAlert.setContentText("Document generat cu succes!");
-                                successAlert.showAndWait();
-                                // cleanup after the dialog is closed
-                                User.resetData();
-                                run = false;
-
-
-
-
-
-
-
+                        Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                        successAlert.setTitle("Success");
+                        successAlert.setHeaderText(null);
+                        successAlert.setContentText("Document generat cu succes!");
+                        successAlert.showAndWait();
+                        // cleanup after the dialog is closed
+                        User.resetData();
+                        run = false;
 
 
                     } catch (java.io.IOException ioException) {
@@ -183,13 +192,10 @@ public class WindowController {
                 }
 
 
-
             });
 
-
-
-
-            glassCard.getChildren().addAll(titleLabel, descLabel, inputBox, idBox, submitBtn);
+            // add both selector rows to the card
+            glassCard.getChildren().addAll(titleLabel, descLabel, inputBox, inputBox2, idBox, submitBtn);
             root.getChildren().add(glassCard);
 
 
@@ -216,6 +222,3 @@ public class WindowController {
         WindowController.run = run;
     }
 }
-
-
-
