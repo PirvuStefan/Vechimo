@@ -25,7 +25,11 @@ public class User { // static class to hold user data across different screens (
         boolean test = false;
 
         List < String > textBlocks = ProcessorFactory.getProcessor(test).extractTextLines(imagePath1);
-        if(imagePath2!=null) textBlocks = Stream.concat(textBlocks.stream(), ProcessorFactory.getProcessor(test).extractTextLines(imagePath2).stream()).toList();
+
+        if (imagePath2 != null && !imagePath2.isEmpty() && !imagePath2.equals("Niciun fișier selectat...")) {
+            List<String> textBlocks2 = ProcessorFactory.getProcessor(test).extractTextLines(imagePath2);
+            textBlocks = Stream.concat(textBlocks.stream(), textBlocks2.stream()).toList();
+        }
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
         String today = LocalDate.now().format(formatter);
@@ -81,22 +85,12 @@ public class User { // static class to hold user data across different screens (
             }
             else if(line.contains("COR") && line.contains("Data inceput contract")){
                 String[] parts = line.split("COR");
-                if (parts.length > 1) {
-                    String afterCor = parts[1];
-                    int dashIdx = afterCor.indexOf('-');
-                    if (dashIdx >= 0) {
-                        afterCor = afterCor.substring(0, dashIdx);
-                    }
-                    int commaIdx = afterCor.indexOf(',');
-                    if (commaIdx >= 0) {
-                        afterCor = afterCor.substring(0, commaIdx);
-                    }
-                    String jobValue = afterCor.trim().replaceAll("[^0-9]", "");
-                    if (!jobValue.isEmpty()) {
-                        System.out.println(jobValue + " \n\n");
-                        User.currentJob = jobValue;
-                    }
-                }
+                getIntregistrationCOR(parts);
+                continue;
+            }
+            else if(line.contains("Data inceput") && textBlocks.get(i-1).contains("COR")){
+                String[] parts = textBlocks.get(i-1).split("COR");
+                getIntregistrationCOR(parts);
                 continue;
             }
 
@@ -120,6 +114,11 @@ public class User { // static class to hold user data across different screens (
             if(line.contains("Salariu brut") && textBlocks.get(i-1).contains("COR") && textBlocks.get(i-1).contains("Data inceput")){
                 // here we have the initial salary and the initial job ( inregistrare )
                 InterventionRecord.putInterventionRecordInregistrare(line, textBlocks.get(i-1));
+                continue;
+            }
+            else if(line.contains("Salariu brut") && textBlocks.get(i-2).contains("COR") && textBlocks.get(i-1).contains("Data inceput")){
+                // exceptional case when the job title is way too long ( e.g. "Consilier/Expert/Inspector/Referent/Economist în Comerţ şi Marketing") and it is split in two lines, so we need to check the line before the previous one for the job title
+                InterventionRecord.putInterventionRecordInregistrare(line, textBlocks.get(i-2));
                 continue;
             }
 
@@ -154,6 +153,25 @@ public class User { // static class to hold user data across different screens (
         User.print();
 
 
+    }
+
+    private static void getIntregistrationCOR(String[] parts) {
+        if (parts.length > 1) {
+            String afterCor = parts[1];
+            int dashIdx = afterCor.indexOf('-');
+            if (dashIdx >= 0) {
+                afterCor = afterCor.substring(0, dashIdx);
+            }
+            int commaIdx = afterCor.indexOf(',');
+            if (commaIdx >= 0) {
+                afterCor = afterCor.substring(0, commaIdx);
+            }
+            String jobValue = afterCor.trim().replaceAll("[^0-9]", "");
+            if (!jobValue.isEmpty()) {
+                System.out.println(jobValue + " \n\n");
+                User.currentJob = jobValue;
+            }
+        }
     }
 
     static void handleSuspensions(List<String> textBlocks, AtomicInteger pos){

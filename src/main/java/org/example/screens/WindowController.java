@@ -168,6 +168,9 @@ public class WindowController {
                         run = true;
                         User.addNumber(idField.getText());
                         // pass first PDF path into Parsing (adjust Parsing if it needs both)
+
+                        System.out.println("This are the paths being processed in the submit action.");
+                        System.out.println(path1 + "and the second one: " + path2);
                         new Parsing(path1, path2);
 
                         Alert successAlert = new Alert(Alert.AlertType.INFORMATION);

@@ -54,7 +54,7 @@ public class InterventionRecord {
             case "inregistrare" -> "Inregistrare contract";
             case "majorare" -> "Majorare salariu";
             case "incetare" -> "Incetare contract";
-            case "promovare" -> "Act aditional";
+            case "promovare", "suspendare" -> "Act aditional";
             default -> "Unknown intervention type";
         };
     }

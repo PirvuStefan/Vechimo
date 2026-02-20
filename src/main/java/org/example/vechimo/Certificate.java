@@ -58,7 +58,8 @@ public class Certificate {
 
                         for (InterventionRecord record : progEntry.getValue()) {
 
-                            text = text.replace("Dat" + count + "r", getDataFormat(progEntry.getKey()));
+                            if(!record.type.equals("suspendare"))text = text.replace("Dat" + count + "r", getDataFormat(progEntry.getKey()));
+                            else text = text.replace("Dat" + count + "r", getDataFormat(progEntry.getKey()) + " \n-\n " + getDataFormat(record.date));
                             text = text.replace("Inreg" + count + "r", record.getDescription());
                             text = text.replace("Act" + count + "r", record.getAct());
                             text = text.replace("Sal" + count + "r", String.valueOf(record.salary));
@@ -97,9 +98,10 @@ public class Certificate {
     }
 
     private static String getTemplatePath(int count) {
-        if(count < 10) count = 10;
-        else if(count > 20) count = 25;
-        return "/template_" + (count - count % 5) +".docx";
+        if (count < 10) count = 10;
+        else if (count > 20) count = 25;
+        int rounded = ((count + 4) / 5) * 5;
+        return "/template_" + rounded + ".docx";
     }
 
 
